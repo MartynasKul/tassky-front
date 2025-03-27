@@ -1,4 +1,4 @@
-import Image from "next/image";
+import Image from 'next/image';
 
 // const Header = () =>{
 //   const isLoggedIn = checkAuthStatus();
@@ -18,18 +18,36 @@ export default function Home() {
           priority
         />
         <div className="bg-white justify-center rounded-4xl grid-rows-3 flex-1/3 grid-cols-3">
-          <text className="text-yellow-300 font-bold font-stretch-50% p-5"> BALLS</text>
-          <text className="text-green-600 font-bold font-stretch-50% p-5"> BALLS</text>
-          <text className="text-red-600 font-bold font-stretch-50% p-5"> BALLS</text>
+          <text className="text-yellow-300 font-bold font-stretch-50% p-5">
+            {' '}
+            BALLS
+          </text>
+          <text className="text-green-600 font-bold font-stretch-50% p-5">
+            {' '}
+            BALLS
+          </text>
+          <text className="text-red-600 font-bold font-stretch-50% p-5">
+            {' '}
+            BALLS
+          </text>
         </div>
         <div className="bg-white justify-center rounded-4xl grid-rows-3 flex-1/3 grid-cols-3">
-          <text className="text-yellow-300 font-bold font-stretch-50% p-5"> BALLS</text>
-          <text className="text-green-600 font-bold font-stretch-50% p-5"> BALLS</text>
-          <text className="text-red-600 font-bold font-stretch-50% p-5"> BALLS</text>
+          <text className="text-yellow-300 font-bold font-stretch-50% p-5">
+            {' '}
+            BALLS
+          </text>
+          <text className="text-green-600 font-bold font-stretch-50% p-5">
+            {' '}
+            BALLS
+          </text>
+          <text className="text-red-600 font-bold font-stretch-50% p-5">
+            {' '}
+            BALLS
+          </text>
         </div>
         <ol className="list-inside list-decimal text-sm/6 text-center sm:text-left font-[family-name:var(--font-geist-mono)]">
           <li className="mb-2 tracking-[-.01em]">
-            Get started by editing{" "}
+            Get started by editing{' '}
             <code className="bg-black/[.05] dark:bg-white/[.06] px-1 py-0.5 rounded font-[family-name:var(--font-geist-mono)] font-semibold">
               src/app/page.tsx
             </code>
