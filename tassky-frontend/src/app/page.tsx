@@ -9,11 +9,11 @@ export default function Home() {
   const router = useRouter();
 
   return (
-    <div className="bg-white flex flex-col min-w-screen ">
+    <div className="flex items-center justify-center flex-col w-full h-full ">
       {/* Main content section */}
       {/* <main className="flex-grow px-4 py-8"> */}
       {/* Hero section with rounded corners matching your wireframe */}
-      <div className="max-w-4xl mx-auto bg-violet-50 rounded-[40px] overflow-hidden">
+      <div className="max-w-4xl w-full mx-auto bg-violet-50 rounded-[40px] overflow-hidden shadow-2xl">
         <div className="flex flex-col items-center justify-center p-10 py-16 relative">
           {/* Decorative wave lines on left side */}
           <div className="absolute left-6 top-0 bottom-0 flex flex-col justify-center space-y-8">
@@ -39,7 +39,7 @@ export default function Home() {
             variant="default"
             size="lg"
             onClick={() => router.push('/register')}
-            className="rounded-full px-10 bg-violet-300 hover:bg-violet-400 text-white font-semibold shadow-lg transition duration-300 ease-in-out transform hover:scale-105"
+            className="rounded-full px-10 bg-violet-400 hover:bg-violet-500 text-white font-semibold shadow-lg transition duration-300 ease-in-out transform hover:scale-105"
           >
             Get started
           </Button>

@@ -13,8 +13,8 @@ export default function Footer() {
     return () => clearInterval(interval);
   }, []);
   return (
-    <div className=" bg-violet-50 border-t border-gray-200 py-4 text-center">
-      <p className="font-semibold text-gray-600">Tassky &copy;{year}</p>
+    <div className=" bg-violet-600  py-4 text-center">
+      <p className="font-semibold text-white">Tassky &copy;{year}</p>
     </div>
   );
 }
