@@ -4,7 +4,7 @@ import React from 'react';
 
 export default function About() {
   return (
-    <div className="bg-white flex flex-col items-center justify-center min-h-screen p-4">
+    <div className="flex flex-col items-center justify-center h-full w-full p-4">
       <div className="bg-white shadow-lg rounded-lg p-6 max-w-md w-full">
         <h1 className="text-black bg-violet-100 rounded-4xl text-center text-2xl font-bold mb-4 shadow-xl">
           About Us
@@ -29,8 +29,8 @@ export default function About() {
           Contact Us
         </h2>
         <p className="text-gray-700 mb-4">
-          If you have any questions, suggestions, or feedback, please dont
-          hesitate to contact us at{' '}
+          If you have any questions, suggestions, or feedback, please hesitate
+          to contact us at martiss200@gmail.com
         </p>
       </div>
     </div>

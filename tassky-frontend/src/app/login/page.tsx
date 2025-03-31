@@ -1,11 +1,14 @@
 'use client';
 
+import { Button } from '../components/ui/button';
+import { Input } from '../components/ui/input';
 import { LoginDto } from '@/types/auth';
 // import { apiLocal } from '@/utils/api';
 import { api } from '@/utils/api';
 import { AxiosError } from 'axios';
 import { useRouter } from 'next/navigation';
 import React, { useState } from 'react';
+import { FcGoogle } from 'react-icons/fc';
 
 export default function Login() {
   const router = useRouter();
@@ -13,7 +16,7 @@ export default function Login() {
     username: '',
     password: '',
   });
-  const [error, setError] = useState<string | null>(null);
+  const [, setError] = useState<string | null>(null);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -61,42 +64,83 @@ export default function Login() {
   };
 
   return (
-    <div className="flex flex-col items-center justify-center h-screen bg-white">
-      <view className="bg-blue-800 justify-center shadow-xl p-4 rounded-lg ">
-        <h1 className="font-bold text-2xl justify-center items-center">
-          Login
-        </h1>
-        {error && <p className="text-red-600 italic">{error}</p>}
-        <form
-          onSubmit={handleSubmit}
-          className="flex flex-col items-center justify-center p-5"
-        >
-          <input
-            type="username"
-            name="username"
-            value={formData.username}
-            onChange={handleChange}
-            placeholder="Username"
-            required
-            className="border border-blue-300 p-2 rounded mb-2 bg-white text-black"
-          />
-          <input
-            type="password"
-            name="password"
-            value={formData.password}
-            onChange={handleChange}
-            placeholder="Password"
-            required
-            className="border border-blue-300 p-2 rounded mb-2 bg-white text-black"
-          />
-          <button
-            type="submit"
-            className="bg-blue-400 rounded-2xl p-3 text-white hover:bg-blue-500 font-bold shadow-2xl"
-          >
+    <div className="flex items-center justify-center w-full h-full">
+      <div className="max-w-md w-full bg-white rounded-[40px] overflow-hidden shadow-2xl">
+        <div className="flex flex-col items-center justify-center p-10 py-12 relative">
+          {/* Decorative wave lines on left side
+        <div className="absolute left-6 top-0 bottom-0 flex flex-col justify-center space-y-8">
+          <WaveDecoration side={'left'} />
+        </div>
+
+        {/* Decorative wave lines on right side 
+        <div className="absolute right-6 top-0 bottom-0 flex flex-col justify-center space-y-8">
+          <WaveDecoration side={'right'} />
+        </div> */}
+
+          <h1 className="text-3xl font-bold mb-8 text-center text-black">
             Login
-          </button>
-        </form>
-      </view>
+          </h1>
+
+          <form onSubmit={handleSubmit} className="w-full space-y-6">
+            <div>
+              <Input
+                type="text"
+                name="username"
+                placeholder="Username"
+                value={formData.username}
+                onChange={handleChange}
+                className="w-full rounded-lg border border-gray-300 px-4 py-3"
+                required
+              />
+            </div>
+
+            <div>
+              <Input
+                type="password"
+                name="password"
+                placeholder="Password"
+                value={formData.password}
+                onChange={handleChange}
+                className="w-full rounded-lg border border-gray-300 px-4 py-3"
+                required
+              />
+            </div>
+
+            <div className="flex flex-col sm:flex-row sm:justify-between gap-4">
+              <Button
+                type="submit"
+                variant="default"
+                className="rounded-full px-10 py-2 bg-violet-400 hover:bg-violet-500 text-white font-semibold shadow-ld transition duration-300 ease-in-out transform hover:scale-105"
+              >
+                Log In
+              </Button>
+
+              <Button
+                type="button"
+                variant="outline"
+                className="rounded-full px-5 py-2 border border-gray-300 hover:bg-gray-50 text-gray-700 font-semibold shadow-sm flex items-center justify-center gap-2 transition duration-200 ease-in-out hover:scale-105"
+                onClick={() => console.log('Google Sign In')}
+              >
+                <FcGoogle className="text-xl" />
+                Sign in with Google
+              </Button>
+            </div>
+          </form>
+
+          <div className="mt-6 text-center text-sm text-gray-600">
+            Dont have an account?{' '}
+            <button
+              onClick={() => router.push('/register')}
+              className="text-violet-500 hover:text-violet-600 font-medium underline hover:scale-105"
+            >
+              Register
+            </button>
+            <div className="font-semibold underline">
+              *Sign in with Google temporarily disabled*
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
   );
 }

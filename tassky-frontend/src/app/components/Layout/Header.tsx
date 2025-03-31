@@ -9,7 +9,7 @@ export default function Header() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   return (
-    <header className="bg-white border-b border-gray-200">
+    <header className="bg-white border-gray-200">
       <div className="container mx-auto px-4 py-3 flex items-center justify-between">
         <div className="flex items-center justify-between w-full">
           {/* Logo */}
@@ -34,21 +34,21 @@ export default function Header() {
             <Link
               href="/explore"
               // className="px-4 py-2 rounded-md border-2 border-gray-800 text-gray-800 font-medium hover:bg-gray-100 transition-colors"
-              className="rounded-full px-10 py-2 bg-violet-300 hover:bg-violet-400 text-white font-semibold shadow-lg transition duration-300 ease-in-out transform hover:scale-105"
+              className="rounded-full px-10 py-2 bg-violet-400 hover:bg-violet-500 text-white font-semibold shadow-lg transition duration-300 ease-in-out transform hover:scale-105"
             >
               Explore
             </Link>
             <Link
               href="/about"
               // className="px-4 py-2 rounded-md border-2 border-gray-800 text-gray-800 font-medium hover:bg-gray-100 transition-colors"
-              className="rounded-full px-10 py-2 bg-violet-300 hover:bg-violet-400 text-white font-semibold shadow-lg transition duration-300 ease-in-out transform hover:scale-105"
+              className="rounded-full px-10 py-2 bg-violet-400 hover:bg-violet-500 text-white font-semibold shadow-lg transition duration-300 ease-in-out transform hover:scale-105"
             >
               About
             </Link>
             <Link
-              href="/login"
+              href="/register"
               // className="px-4 py-2 rounded-md border-2 border-gray-800 text-gray-800 font-medium hover:bg-gray-100 transition-colors"
-              className="rounded-full px-10 py-2 bg-violet-300 hover:bg-violet-400 text-white font-semibold shadow-lg transition duration-300 ease-in-out transform hover:scale-105"
+              className="rounded-full px-10 py-2 bg-violet-400 hover:bg-violet-500 text-white font-semibold shadow-lg transition duration-300 ease-in-out transform hover:scale-105"
             >
               Signin
             </Link>
@@ -86,7 +86,7 @@ export default function Header() {
                 About
               </Link>
               <Link
-                href="/login"
+                href="/register"
                 // className="px-4 py-2 rounded-md border-2 border-gray-800 text-gray-800 text-center font-medium hover:bg-gray-100 transition-colors"
                 className="rounded-full px-10 py-2 bg-violet-300 hover:bg-violet-400 text-white text-center font-semibold shadow-lg transition duration-300 ease-in-out transform hover:scale-105"
                 onClick={() => setIsMenuOpen(false)}
