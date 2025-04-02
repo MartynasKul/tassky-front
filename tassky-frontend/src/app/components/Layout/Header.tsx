@@ -3,10 +3,19 @@
 import Pic from '@/app/components/Photos/TasskyTextLess.jpeg';
 import Image from 'next/image';
 import Link from 'next/link';
+import React from 'react';
 import { useState } from 'react';
 
 export default function Header() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [loggedIn, setLoggedIn] = useState(false);
+
+  React.useEffect(() => {
+    const token = localStorage.getItem('access_token');
+    if (token) {
+      setLoggedIn(true);
+    }
+  }, []);
 
   return (
     <header className="bg-white border-gray-200">
@@ -22,7 +31,7 @@ export default function Header() {
               alt="Tassky Logo"
             />
             <Link
-              href="/"
+              href={loggedIn ? '/dashboard' : '/'}
               className="text-3xl font-bold text-gray-800 hover:text-gray-600 transition-colors"
             >
               Tassky
@@ -31,27 +40,57 @@ export default function Header() {
 
           {/* Desktop Navigation */}
           <nav className="hidden md:flex space-x-2">
-            <Link
-              href="/explore"
-              // className="px-4 py-2 rounded-md border-2 border-gray-800 text-gray-800 font-medium hover:bg-gray-100 transition-colors"
-              className="rounded-full px-10 py-2 bg-violet-400 hover:bg-violet-500 text-white font-semibold shadow-lg transition duration-300 ease-in-out transform hover:scale-105"
-            >
-              Explore
-            </Link>
-            <Link
-              href="/about"
-              // className="px-4 py-2 rounded-md border-2 border-gray-800 text-gray-800 font-medium hover:bg-gray-100 transition-colors"
-              className="rounded-full px-10 py-2 bg-violet-400 hover:bg-violet-500 text-white font-semibold shadow-lg transition duration-300 ease-in-out transform hover:scale-105"
-            >
-              About
-            </Link>
-            <Link
-              href="/register"
-              // className="px-4 py-2 rounded-md border-2 border-gray-800 text-gray-800 font-medium hover:bg-gray-100 transition-colors"
-              className="rounded-full px-10 py-2 bg-violet-400 hover:bg-violet-500 text-white font-semibold shadow-lg transition duration-300 ease-in-out transform hover:scale-105"
-            >
-              Signin
-            </Link>
+            {loggedIn ? (
+              // Logged in navigation
+              <>
+                <Link
+                  href="/dashboard"
+                  className="rounded-full px-10 py-2 bg-violet-400 hover:bg-violet-500 text-white font-semibold shadow-lg transition duration-300 ease-in-out transform hover:scale-105"
+                >
+                  Dashboard
+                </Link>
+                <Link
+                  href="/explore"
+                  className="rounded-full px-10 py-2 bg-violet-400 hover:bg-violet-500 text-white font-semibold shadow-lg transition duration-300 ease-in-out transform hover:scale-105"
+                >
+                  Explore
+                </Link>
+                <Link
+                  href="/about"
+                  className="rounded-full px-10 py-2 bg-violet-400 hover:bg-violet-500 text-white font-semibold shadow-lg transition duration-300 ease-in-out transform hover:scale-105"
+                >
+                  About
+                </Link>
+                <Link
+                  href="/profile"
+                  className="rounded-full px-10 py-2 bg-violet-400 hover:bg-violet-500 text-white font-semibold shadow-lg transition duration-300 ease-in-out transform hover:scale-105"
+                >
+                  Profile
+                </Link>
+              </>
+            ) : (
+              // Guest navigation
+              <>
+                <Link
+                  href="/explore"
+                  className="rounded-full px-10 py-2 bg-violet-400 hover:bg-violet-500 text-white font-semibold shadow-lg transition duration-300 ease-in-out transform hover:scale-105"
+                >
+                  Explore
+                </Link>
+                <Link
+                  href="/about"
+                  className="rounded-full px-10 py-2 bg-violet-400 hover:bg-violet-500 text-white font-semibold shadow-lg transition duration-300 ease-in-out transform hover:scale-105"
+                >
+                  About
+                </Link>
+                <Link
+                  href="/login"
+                  className="rounded-full px-10 py-2 bg-violet-400 hover:bg-violet-500 text-white font-semibold shadow-lg transition duration-300 ease-in-out transform hover:scale-105"
+                >
+                  Signin
+                </Link>
+              </>
+            )}
           </nav>
 
           {/* Mobile Menu Toggle */}
@@ -69,30 +108,64 @@ export default function Header() {
         {isMenuOpen && (
           <div className="mt-2 md:hidden">
             <nav className="flex flex-col p-2 space-y-2">
-              <Link
-                href="/explore"
-                // className="px-4 py-2 rounded-md border-2 border-gray-800 text-gray-800 text-center font-medium hover:bg-gray-100 transition-colors"
-                className="rounded-full px-10 py-2 bg-violet-300 hover:bg-violet-400 text-white text-center font-semibold shadow-lg transition duration-300 ease-in-out transform hover:scale-105"
-                onClick={() => setIsMenuOpen(false)}
-              >
-                Explore
-              </Link>
-              <Link
-                href="/about"
-                // className="px-4 py-2 rounded-md border-2 border-gray-800 text-gray-800 text-center font-medium hover:bg-gray-100 transition-colors"
-                className="rounded-full px-10 py-2 bg-violet-300 hover:bg-violet-400 text-white text-center font-semibold shadow-lg transition duration-300 ease-in-out transform hover:scale-105"
-                onClick={() => setIsMenuOpen(false)}
-              >
-                About
-              </Link>
-              <Link
-                href="/register"
-                // className="px-4 py-2 rounded-md border-2 border-gray-800 text-gray-800 text-center font-medium hover:bg-gray-100 transition-colors"
-                className="rounded-full px-10 py-2 bg-violet-300 hover:bg-violet-400 text-white text-center font-semibold shadow-lg transition duration-300 ease-in-out transform hover:scale-105"
-                onClick={() => setIsMenuOpen(false)}
-              >
-                Signin
-              </Link>
+              {loggedIn ? (
+                // Mobile logged in navigation
+                <>
+                  <Link
+                    href="/dashboard"
+                    className="rounded-full px-10 py-2 bg-violet-300 hover:bg-violet-400 text-white text-center font-semibold shadow-lg transition duration-300 ease-in-out transform hover:scale-105"
+                    onClick={() => setIsMenuOpen(false)}
+                  >
+                    Dashboard
+                  </Link>
+                  <Link
+                    href="/explore"
+                    className="rounded-full px-10 py-2 bg-violet-300 hover:bg-violet-400 text-white text-center font-semibold shadow-lg transition duration-300 ease-in-out transform hover:scale-105"
+                    onClick={() => setIsMenuOpen(false)}
+                  >
+                    Explore
+                  </Link>
+                  <Link
+                    href="/about"
+                    className="rounded-full px-10 py-2 bg-violet-300 hover:bg-violet-400 text-white text-center font-semibold shadow-lg transition duration-300 ease-in-out transform hover:scale-105"
+                    onClick={() => setIsMenuOpen(false)}
+                  >
+                    About
+                  </Link>
+                  <Link
+                    href="/profile"
+                    className="rounded-full px-10 py-2 bg-violet-300 hover:bg-violet-400 text-white text-center font-semibold shadow-lg transition duration-300 ease-in-out transform hover:scale-105"
+                    onClick={() => setIsMenuOpen(false)}
+                  >
+                    Profile
+                  </Link>
+                </>
+              ) : (
+                // Mobile guest navigation
+                <>
+                  <Link
+                    href="/explore"
+                    className="rounded-full px-10 py-2 bg-violet-300 hover:bg-violet-400 text-white text-center font-semibold shadow-lg transition duration-300 ease-in-out transform hover:scale-105"
+                    onClick={() => setIsMenuOpen(false)}
+                  >
+                    Explore
+                  </Link>
+                  <Link
+                    href="/about"
+                    className="rounded-full px-10 py-2 bg-violet-300 hover:bg-violet-400 text-white text-center font-semibold shadow-lg transition duration-300 ease-in-out transform hover:scale-105"
+                    onClick={() => setIsMenuOpen(false)}
+                  >
+                    About
+                  </Link>
+                  <Link
+                    href="/login"
+                    className="rounded-full px-10 py-2 bg-violet-300 hover:bg-violet-400 text-white text-center font-semibold shadow-lg transition duration-300 ease-in-out transform hover:scale-105"
+                    onClick={() => setIsMenuOpen(false)}
+                  >
+                    Signin
+                  </Link>
+                </>
+              )}
             </nav>
           </div>
         )}
