@@ -38,10 +38,11 @@ export default function Login() {
       if (response.status === 200) {
         // Store token in client-side storage
         console.log(response.data);
-        localStorage.setItem('access_token', response.data);
+        localStorage.setItem('access_token', response.data.access_token);
+        localStorage.setItem('user', JSON.stringify(response.data.user));
 
         // Redirect to dashboard or home
-        router.push('/');
+        router.push('/dashboard');
       }
     } catch (err: unknown) {
       const error = err as AxiosError;
@@ -137,6 +138,9 @@ export default function Login() {
             </button>
             <div className="font-semibold underline">
               *Sign in with Google temporarily disabled*
+            </div>
+            <div className="absolute p-2 rounded-2xl b-4 left-0 right-0 text-center opacity-0 hover:opacity-100 transition-opacity duration-300">
+              demo creds: demo | demo1234
             </div>
           </div>
         </div>
