@@ -1,7 +1,7 @@
 'use client';
 
 import { KanbanColumn } from './KanbanColumn';
-import { SortableTask } from './SortableTask';
+// import { SortableTask } from './SortableTask';
 import { Card, CardContent } from '@/app/components/ui/card';
 import {
   DndContext,
@@ -17,9 +17,9 @@ import {
 } from '@dnd-kit/core';
 import {
   arrayMove,
-  SortableContext,
+  // SortableContext,
   sortableKeyboardCoordinates,
-  verticalListSortingStrategy,
+  // verticalListSortingStrategy,
 } from '@dnd-kit/sortable';
 import React, { useState } from 'react';
 
