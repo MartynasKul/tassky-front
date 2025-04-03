@@ -1,74 +1,87 @@
-'use client';
-
 import React, { useState } from 'react';
 
 interface JoinTeamModalProps {
   onClose: () => void;
-  onJoinTeam: (team: { id: string; name: string }) => void;
+  onJoinTeam: (inviteCode: string) => void;
 }
 
 export default function JoinTeamModal({
   onClose,
   onJoinTeam,
 }: JoinTeamModalProps) {
-  const [teamCode, setTeamCode] = useState<string>('');
+  const [inviteCode, setInviteCode] = useState('');
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [error, setError] = useState('');
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (teamCode.trim()) {
-      const joinedTeam = {
-        id: teamCode,
-        name: `Team-${teamCode.substring(0, 4)}`,
-      };
-      onJoinTeam(joinedTeam);
+
+    if (!inviteCode.trim()) {
+      setError('Invite code is required');
+      return;
+    }
+
+    setIsSubmitting(true);
+    try {
+      await onJoinTeam(inviteCode.trim());
+    } catch (err) {
+      setError('Failed to join team. Please check your invite code.' + err);
+      setIsSubmitting(false);
     }
   };
 
   return (
-    <div className="fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-50">
-      <div className="bg-white rounded-lg shadow-2xl border border-gray-200 p-6 w-full max-w-md">
-        <div className="flex justify-between items-center mb-4">
-          <h2 className="text-xl font-bold">Join Team</h2>
-          <button
-            onClick={onClose}
-            className="text-gray-500 hover:text-gray-700"
-          >
-            ✕
-          </button>
-        </div>
+    <div className="fixed inset-0 flex items-center justify-center z-50">
+      <div
+        className="absolute inset-0 bg-black opacity-50"
+        onClick={onClose}
+      ></div>
+      <div className="bg-white rounded-lg p-6 w-full max-w-md z-10">
+        <h2 className="text-xl font-bold mb-4">Join Team</h2>
+
+        {error && (
+          <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-2 rounded mb-4">
+            {error}
+          </div>
+        )}
 
         <form onSubmit={handleSubmit}>
-          <div className="mb-4">
+          <div className="mb-6">
             <label
-              htmlFor="teamCode"
-              className="block text-sm font-medium text-gray-700 mb-1"
+              htmlFor="inviteCode"
+              className="block text-gray-700 font-medium mb-2"
             >
-              Team Code
+              Invite Code*
             </label>
             <input
               type="text"
-              id="teamCode"
-              value={teamCode}
-              onChange={(e) => setTeamCode(e.target.value)}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-violet-500"
-              placeholder="Enter team invitation code"
+              id="inviteCode"
+              value={inviteCode}
+              onChange={(e) => setInviteCode(e.target.value)}
+              className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-violet-500"
+              placeholder="Enter team invite code"
               required
             />
+            <p className="text-sm text-gray-500 mt-1">
+              Ask your team admin for the invite code
+            </p>
           </div>
 
-          <div className="flex justify-end space-x-2">
+          <div className="flex justify-end space-x-3">
             <button
               type="button"
               onClick={onClose}
-              className="px-4 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50"
+              className="px-4 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-100"
+              disabled={isSubmitting}
             >
               Cancel
             </button>
             <button
               type="submit"
-              className="px-4 py-2 bg-violet-500 text-white rounded-md hover:bg-violet-600"
+              className="px-4 py-2 bg-violet-500 text-white rounded-md hover:bg-violet-600 focus:outline-none focus:ring-2 focus:ring-violet-500"
+              disabled={isSubmitting}
             >
-              Join Team
+              {isSubmitting ? 'Joining...' : 'Join Team'}
             </button>
           </div>
         </form>

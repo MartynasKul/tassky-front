@@ -40,6 +40,11 @@ export default function Login() {
         console.log(response.data);
         localStorage.setItem('access_token', response.data.access_token);
         localStorage.setItem('user', JSON.stringify(response.data.user));
+        console.log('Token saved:', localStorage.getItem('access_token'));
+        console.log(
+          'User saved:',
+          JSON.stringify(localStorage.getItem('user'))
+        );
 
         // Redirect to dashboard or home
         router.push('/dashboard');
