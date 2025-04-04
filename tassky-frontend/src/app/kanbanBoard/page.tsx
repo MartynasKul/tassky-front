@@ -36,9 +36,9 @@ export interface KanbanColumnType {
   tasks: KanbanTask[];
 }
 
-interface KanbanBoardProps {
-  initialColumns?: KanbanColumnType[];
-}
+// interface KanbanBoardProps {
+//   initialColumns?: KanbanColumnType[];
+// }
 
 // Sample initial data - this would come from backend later
 const sampleColumns: KanbanColumnType[] = [
@@ -85,12 +85,23 @@ const sampleColumns: KanbanColumnType[] = [
     tasks: [],
   },
 ];
-
-const KanbanBoard: React.FC<KanbanBoardProps> = ({
-  initialColumns = sampleColumns,
-}) => {
-  const [columns, setColumns] = useState<KanbanColumnType[]>(initialColumns);
+export default function KanbanBoard() {
+  // const KanbanBoard: React.FC<KanbanBoardProps> = ({
+  //   initialColumns = sampleColumns,
+  // }) => {
+  const [columns, setColumns] = useState<KanbanColumnType[]>([]);
   const [activeTask, setActiveTask] = useState<KanbanTask | null>(null);
+
+  React.useEffect(() => {
+    // Simulate fetching data from an API
+    const fetchData = async () => {
+      // Simulate a delay
+      await new Promise((resolve) => setTimeout(resolve, 1000));
+      setColumns(sampleColumns);
+    };
+
+    fetchData();
+  }, []);
 
   // Initialize sensors for drag detection
   const sensors = useSensors(
@@ -281,6 +292,6 @@ const KanbanBoard: React.FC<KanbanBoardProps> = ({
       </Card>
     </div>
   );
-};
+}
 
-export default KanbanBoard;
+// export default KanbanBoard;
