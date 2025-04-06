@@ -2,6 +2,7 @@
 
 import { Button } from '../components/ui/button';
 import { Input } from '../components/ui/input';
+import { useAuth } from '@/context/AuthContext';
 import { LoginDto } from '@/types/auth';
 // import { apiLocal } from '@/utils/api';
 import { api } from '@/utils/api';
@@ -16,6 +17,8 @@ export default function Login() {
     username: '',
     password: '',
   });
+
+  const { login } = useAuth();
   const [, setError] = useState<string | null>(null);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -32,22 +35,9 @@ export default function Login() {
 
     try {
       const response = await api.post('auth/login', formData);
-      // const response = await apiLocal.post('auth/login', formData);
-
       // Successful login
       if (response.status === 200) {
-        // Store token in client-side storage
-        console.log(response.data);
-        localStorage.setItem('access_token', response.data.access_token);
-        localStorage.setItem('user', JSON.stringify(response.data.user));
-        console.log('Token saved:', localStorage.getItem('access_token'));
-        console.log(
-          'User saved:',
-          JSON.stringify(localStorage.getItem('user'))
-        );
-
-        // Redirect to dashboard or home
-        router.push('/dashboard');
+        login(response.data.access_token, response.data.user);
       }
     } catch (err: unknown) {
       const error = err as AxiosError;
@@ -144,7 +134,7 @@ export default function Login() {
             <div className="font-semibold underline">
               *Sign in with Google temporarily disabled*
             </div>
-            <div className="absolute p-2 rounded-2xl b-4 left-0 right-0 text-center opacity-0 hover:opacity-100 transition-opacity duration-300">
+            <div className="absolute p-2 rounded-2xl b-4 left-0 right-0 text-center">
               demo creds: demo | demo1234
             </div>
           </div>
