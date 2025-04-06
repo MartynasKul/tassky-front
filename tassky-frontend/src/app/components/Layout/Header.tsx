@@ -1,6 +1,7 @@
 'use client';
 
 import Pic from '@/app/components/Photos/TasskyTextLess.jpeg';
+import { useAuth } from '@/context/AuthContext';
 import Image from 'next/image';
 import Link from 'next/link';
 import React from 'react';
@@ -8,14 +9,7 @@ import { useState } from 'react';
 
 export default function Header() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const [loggedIn, setLoggedIn] = useState(false);
-
-  React.useEffect(() => {
-    const token = localStorage.getItem('access_token');
-    if (token) {
-      setLoggedIn(true);
-    }
-  }, []);
+  const { isLoggedIn, logout } = useAuth();
 
   return (
     <header className="bg-white border-gray-200">
@@ -31,7 +25,7 @@ export default function Header() {
               alt="Tassky Logo"
             />
             <Link
-              href={loggedIn ? '/dashboard' : '/'}
+              href={isLoggedIn ? '/dashboard' : '/'}
               className="text-3xl font-bold text-gray-800 hover:text-gray-600 transition-colors"
             >
               Tassky
@@ -40,7 +34,7 @@ export default function Header() {
 
           {/* Desktop Navigation */}
           <nav className="hidden md:flex space-x-2">
-            {loggedIn ? (
+            {isLoggedIn ? (
               // Logged in navigation
               <>
                 <Link
@@ -66,6 +60,15 @@ export default function Header() {
                   className="rounded-full px-10 py-2 bg-violet-400 hover:bg-violet-500 text-white font-semibold shadow-lg transition duration-300 ease-in-out transform hover:scale-105"
                 >
                   Profile
+                </Link>
+                <Link
+                  onClick={() => {
+                    logout();
+                  }}
+                  href="/"
+                  className="rounded-full px-10 py-2 bg-violet-400 hover:bg-violet-500 text-white font-semibold shadow-lg transition duration-300 ease-in-out transform hover:scale-105"
+                >
+                  Log Out
                 </Link>
               </>
             ) : (
@@ -108,7 +111,7 @@ export default function Header() {
         {isMenuOpen && (
           <div className="mt-2 md:hidden">
             <nav className="flex flex-col p-2 space-y-2">
-              {loggedIn ? (
+              {isLoggedIn ? (
                 // Mobile logged in navigation
                 <>
                   <Link
