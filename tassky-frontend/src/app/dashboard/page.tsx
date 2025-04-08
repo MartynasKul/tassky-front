@@ -2,11 +2,25 @@
 
 import CreateTeamModal from '@/app/components/ui/CreateTeamModal';
 import JoinTeamModal from '@/app/components/ui/JoinTeamModal';
+import TeamAdminPanel from '@/app/components/ui/TeamAdminPanel';
 import TeamButton from '@/app/components/ui/TeamButton';
 import { teamsApi } from '@/utils/api';
 import { useRouter } from 'next/navigation';
 import React, { useState, useEffect } from 'react';
 import { toast } from 'react-hot-toast';
+
+interface TeamMember {
+  id: string;
+  userId: string;
+  role: 'ADMIN' | 'CAPTAIN' | 'MEMBER';
+  joinedAt: string;
+  user: {
+    id: string;
+    username: string;
+    email: string;
+    avatarUrl?: string;
+  };
+}
 
 interface Team {
   id: string;
@@ -16,6 +30,7 @@ interface Team {
   totalXp?: number;
   totalTasks?: number;
   inviteCode: string;
+  members?: TeamMember[];
 }
 
 export default function Dashboard() {
@@ -25,6 +40,9 @@ export default function Dashboard() {
   const [showCreateTeamModal, setShowCreateTeamModal] =
     useState<boolean>(false);
   const [showJoinTeamModal, setShowJoinTeamModal] = useState<boolean>(false);
+  const [showAdminPanel, setShowAdminPanel] = useState<boolean>(false);
+  const [isAdmin, setIsAdmin] = useState<boolean>(false);
+  const [currentUser, setCurrentUser] = useState<string | null>(null);
   const router = useRouter();
 
   const fetchTeams = async () => {
@@ -35,6 +53,10 @@ export default function Dashboard() {
 
       if (teamsData.length > 0 && !selectedTeam) {
         setSelectedTeam(teamsData[0]);
+        // Fetch detailed team info including members
+        const detailedTeam = await teamsApi.getTeamWithMembers(teamsData[0].id);
+        setSelectedTeam(detailedTeam);
+        checkIfUserIsAdmin(detailedTeam);
       }
     } catch (error) {
       console.error('Failed to fetch teams', error);
@@ -42,6 +64,53 @@ export default function Dashboard() {
     } finally {
       setLoading(false);
     }
+  };
+
+  // const fetchCurrentUser = async () => {
+  //   try {
+  //     // Need to implement an endpoint if i ever want to make this project into a real production type project
+  //     //, but for now, i use localstorage
+  //     const userInfo = await fetch('/api/users/me', {
+  //       headers: {
+  //         Authorization: `Bearer ${localStorage.getItem('access_token')}`,
+  //       },
+  //     }).then((res) => res.json());
+
+  //     setCurrentUser(userInfo.id);
+  //   } catch (error) {
+  //     console.error('Failed to fetch user info', error);
+  //   }
+  // };
+
+  const fetchCurrentUser = () => {
+    try {
+      // Get user info from localStorage
+      const userInfoString = localStorage.getItem('user');
+
+      if (userInfoString) {
+        const userInfo = JSON.parse(userInfoString);
+        setCurrentUser(userInfo.id);
+      } else {
+        console.error('No user information found in localStorage');
+        // Redirect to login if no user info is found
+        router.push('/login');
+      }
+    } catch (error) {
+      console.error('Failed to parse user info from localStorage', error);
+    }
+  };
+
+  // Check if the current user is an admin of the selected team
+  const checkIfUserIsAdmin = (team: Team) => {
+    if (!team.members || !currentUser) return false;
+
+    const userMembership = team.members.find(
+      (member) => member.userId === currentUser
+    );
+
+    const adminStatus = userMembership?.role === 'ADMIN';
+    setIsAdmin(adminStatus);
+    return adminStatus;
   };
 
   // Check if user is authenticated
@@ -52,8 +121,15 @@ export default function Dashboard() {
       return;
     }
 
-    fetchTeams();
+    fetchCurrentUser();
   }, [router]);
+
+  // Fetch teams after getting current user
+  useEffect(() => {
+    if (currentUser) {
+      fetchTeams();
+    }
+  }, [currentUser]);
 
   const handleCreateTeam = async (teamData: {
     name: string;
@@ -65,6 +141,11 @@ export default function Dashboard() {
       setSelectedTeam(newTeam);
       setShowCreateTeamModal(false);
       toast?.success('Team created successfully!');
+
+      // Fetch detailed team info including members
+      const detailedTeam = await teamsApi.getTeamWithMembers(newTeam.id);
+      setSelectedTeam(detailedTeam);
+      checkIfUserIsAdmin(detailedTeam);
     } catch (error) {
       console.error('Failed to create team:', error);
       toast?.error('Failed to create team');
@@ -83,8 +164,30 @@ export default function Dashboard() {
     }
   };
 
-  const handleSelectTeam = (team: Team) => {
-    setSelectedTeam(team);
+  const handleSelectTeam = async (team: Team) => {
+    try {
+      setLoading(true);
+      // Fetch detailed team info including members
+      const detailedTeam = await teamsApi.getTeamWithMembers(team.id);
+      setSelectedTeam(detailedTeam);
+      checkIfUserIsAdmin(detailedTeam);
+    } catch (error) {
+      console.error('Failed to fetch team details', error);
+      toast?.error('Failed to load team details');
+      setSelectedTeam(team);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleTeamUpdate = (updatedTeam: Team) => {
+    // Update the teams list with the updated team
+    setTeams(
+      teams.map((team) => (team.id === updatedTeam.id ? updatedTeam : team))
+    );
+
+    // Update the selected team
+    setSelectedTeam(updatedTeam);
   };
 
   return (
@@ -132,9 +235,20 @@ export default function Dashboard() {
             <div className="bg-white rounded-lg shadow-md p-6 min-h-[600px]">
               {selectedTeam ? (
                 <div>
-                  <h2 className="text-xl font-semibold mb-4">
-                    {selectedTeam.name}
-                  </h2>
+                  <div className="flex justify-between items-center mb-4">
+                    <h2 className="text-xl font-semibold">
+                      {selectedTeam.name}
+                    </h2>
+                    {isAdmin && (
+                      <button
+                        onClick={() => setShowAdminPanel(true)}
+                        className="rounded-xl px-10 py-2 bg-violet-400 hover:bg-violet-500 text-white font-semibold shadow-ld transition duration-300 ease-in-out transform hover:scale-105"
+                      >
+                        Manage Team
+                      </button>
+                    )}
+                  </div>
+
                   {selectedTeam.description && (
                     <p className="text-gray-600 mb-4">
                       {selectedTeam.description}
@@ -202,6 +316,15 @@ export default function Dashboard() {
         <JoinTeamModal
           onClose={() => setShowJoinTeamModal(false)}
           onJoinTeam={handleJoinTeam}
+        />
+      )}
+
+      {showAdminPanel && selectedTeam && (
+        <TeamAdminPanel
+          // team={selectedTeam}
+          team={{ ...selectedTeam, members: selectedTeam?.members || [] }}
+          onClose={() => setShowAdminPanel(false)}
+          onTeamUpdate={handleTeamUpdate}
         />
       )}
     </div>
