@@ -149,26 +149,25 @@ export default function TeamAdminPanel({
     }
   };
 
-  React.useEffect(() => {
-    teamData.members.forEach((member) => {
-      console.log('Member:', member.user.id);
-    });
-  }, [teamData.members]);
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-      <div className="bg-white rounded-lg p-6 max-w-4xl w-full max-h-[90vh] overflow-y-auto">
+    <div className=" absolute inset-0 flex items-center justify-center z-50">
+      <div
+        className="absolute inset-0 -z-10 bg-black opacity-50"
+        onClick={onClose}
+      ></div>
+      <div className="bg-white rounded-lg p-6 max-w-4xl w-full max-h-[90vh] overflow-y-auto bg-gradient-to-b from-white to-violet-300">
         <div className="flex justify-between items-center mb-6">
           <h2 className="text-2xl font-bold">Team Admin Panel</h2>
           <button
             onClick={onClose}
-            className="text-gray-500 hover:text-gray-700"
+            className="rounded-xl px-10 py-2 bg-violet-400 hover:bg-violet-500 text-white font-semibold shadow-lg transition duration-300 ease-in-out transform hover:scale-105"
           >
             Close
           </button>
         </div>
 
         {/* Team Information Section */}
-        <div className="mb-8 p-4 bg-violet-50 rounded-lg">
+        <div className="mb-8 p-4 rounded-lg">
           <h3 className="text-lg font-semibold mb-4">Team Information</h3>
           <div className="grid grid-cols-1 gap-4">
             <div>
@@ -179,7 +178,7 @@ export default function TeamAdminPanel({
                 type="text"
                 value={nameInput}
                 onChange={(e) => setNameInput(e.target.value)}
-                className="w-full p-2 border border-gray-300 rounded"
+                className="w-full p-2 border border-gray-300 rounded-xl  bg-white transition duration-300 ease-in-out hover:scale-101"
               />
             </div>
             <div>
@@ -189,7 +188,7 @@ export default function TeamAdminPanel({
               <textarea
                 value={descriptionInput}
                 onChange={(e) => setDescriptionInput(e.target.value)}
-                className="w-full p-2 border border-gray-300 rounded h-24"
+                className="w-full p-2 border bg-white border-gray-300 rounded-xl h-24 transition duration-300 ease-in-out hover:scale-101"
               />
             </div>
             <div>
@@ -201,12 +200,12 @@ export default function TeamAdminPanel({
                   type="text"
                   value={teamData.inviteCode}
                   readOnly
-                  className="w-full p-2 border border-gray-300 rounded bg-gray-50"
+                  className="w-full p-2 border border-gray-300 rounded-xl  bg-white transition duration-300 ease-in-out hover:scale-101"
                 />
                 <button
                   onClick={refreshInviteCode}
                   disabled={loading}
-                  className="ml-2 px-4 py-2 bg-violet-500 text-white rounded hover:bg-violet-600 disabled:bg-violet-300"
+                  className="rounded-xl ml-2 px-4 py-2 bg-violet-400 hover:bg-violet-500 text-white font-semibold shadow-lg transition duration-300 ease-in-out transform hover:scale-105"
                 >
                   Refresh
                 </button>
@@ -216,7 +215,7 @@ export default function TeamAdminPanel({
               <button
                 onClick={updateTeamInfo}
                 disabled={loading}
-                className="px-4 py-2 bg-violet-500 text-white rounded hover:bg-violet-600 disabled:bg-violet-300"
+                className="rounded-xl px-4 py-2 bg-violet-400 hover:bg-violet-500 text-white font-semibold shadow-lg transition duration-300 ease-in-out transform hover:scale-105"
               >
                 Save Changes
               </button>
@@ -240,7 +239,10 @@ export default function TeamAdminPanel({
               </thead>
               <tbody>
                 {teamData.members.map((member) => (
-                  <tr key={member.id} className="hover:bg-gray-50">
+                  <tr
+                    key={member.id}
+                    className="hover:bg-gray-100 transition duration-300 ease-in-out transform "
+                  >
                     <td className="py-2 px-4 border-b">
                       <div className="flex items-center">
                         <div className="w-8 h-8 rounded-full bg-violet-200 flex items-center justify-center mr-2">
@@ -286,7 +288,7 @@ export default function TeamAdminPanel({
                       <button
                         onClick={() => removeMember(member.user.id)}
                         disabled={loading}
-                        className="text-red-500 hover:text-red-700"
+                        className="font-bold text-red-500 hover:text-red-700 transition duration-300 ease-in-out transform hover:scale-105"
                       >
                         Remove
                       </button>
