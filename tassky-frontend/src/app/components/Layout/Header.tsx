@@ -142,6 +142,15 @@ export default function Header() {
                   >
                     Profile
                   </Link>
+                  <Link
+                    onClick={() => {
+                      logout();
+                    }}
+                    href="/"
+                    className="rounded-full px-10 py-2 bg-violet-400 hover:bg-violet-500 text-white font-semibold shadow-lg transition duration-300 ease-in-out transform hover:scale-105"
+                  >
+                    Log Out
+                  </Link>
                 </>
               ) : (
                 // Mobile guest navigation
