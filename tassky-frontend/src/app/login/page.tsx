@@ -1,7 +1,7 @@
 'use client';
 
-import { Button } from '../components/ui/Button';
-import { Input } from '../components/ui/Input';
+import { Button } from '@/app/components/ui/Button';
+import { Input } from '@/app/components/ui/Input';
 import { useAuth } from '@/context/AuthContext';
 import { LoginDto } from '@/types/auth';
 // import { apiLocal } from '@/utils/api';
