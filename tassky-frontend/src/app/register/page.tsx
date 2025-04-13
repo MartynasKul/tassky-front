@@ -1,7 +1,7 @@
 'use client';
 
-import { Button } from '../components/ui/Button';
 import { Input } from '../components/ui/Input';
+import { Button } from '../components/ui/button_TEMP';
 // import WaveDecoration from '../components/ui/waves';
 import { RegisterDto } from '@/types/auth';
 // import { apiLocal } from '@/utils/api';
