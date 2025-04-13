@@ -1,4 +1,4 @@
-import TaskCard from './taskCard';
+import TaskCard from './TaskCard';
 import { TaskType } from '@/app/board/page';
 import { useDroppable } from '@dnd-kit/core';
 import React from 'react';
@@ -8,6 +8,7 @@ interface TaskColumnProps {
   status: TaskType['status'];
   tasks: TaskType[];
   color: string;
+  onViewTaskDetails: (task: TaskType) => void;
 }
 
 const TaskColumn: React.FC<TaskColumnProps> = ({
@@ -15,6 +16,7 @@ const TaskColumn: React.FC<TaskColumnProps> = ({
   status,
   tasks,
   color,
+  onViewTaskDetails,
 }) => {
   const { setNodeRef, isOver } = useDroppable({
     id: status,
@@ -30,7 +32,11 @@ const TaskColumn: React.FC<TaskColumnProps> = ({
       <div className="font-bold italic text-center mb-3">{title}</div>
       <div className="h-full min-h-64 bg-white rounded-lg p-2 space-y-2">
         {tasks.map((task) => (
-          <TaskCard key={task.id} task={task} />
+          <TaskCard
+            key={task.id}
+            task={task}
+            onViewDetails={onViewTaskDetails}
+          />
         ))}
       </div>
     </div>

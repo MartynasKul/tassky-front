@@ -1,30 +1,6 @@
-// import { TaskType } from '@/app/board/page';
-import { teamsApi } from '@/utils/api';
-import React, { useState, useEffect } from 'react';
-
-// Adjust path as needed
-
-export type TaskType = {
-  id: string;
-  title: string;
-  description?: string;
-  priority: 'LOW' | 'MEDIUM' | 'HIGH' | 'URGENT';
-  // status: 'UNASSIGNED' | 'IN_PROGRESS' | 'TESTING' | 'COMPLETED' | 'CANCELLED';
-  createdAt: string;
-  updatedAt: string;
-  deadline?: string;
-  assignedToId?: string;
-  assignedTo?: {
-    id: string;
-    username: string;
-    avatarUrl?: string;
-  };
-  createdBy: {
-    id: string;
-    username: string;
-  };
-  teamId: string;
-};
+import { TaskType } from '@/app/board/page';
+import { tasksApi, teamsApi } from '@/utils/api';
+import React from 'react';
 
 interface TeamMember {
   id: string;
@@ -34,34 +10,37 @@ interface TeamMember {
   };
 }
 
-interface CreateTaskModalProps {
+interface EditTaskModalProps {
+  task: TaskType;
   onClose: () => void;
-  onSubmit: (
-    task: Omit<TaskType, 'id' | 'createdAt' | 'updatedAt' | 'createdBy'>
-  ) => void;
-  teamId: string;
+  onUpdate: () => void;
 }
 
-const CreateTaskModal: React.FC<CreateTaskModalProps> = ({
+const EditTaskModal: React.FC<EditTaskModalProps> = ({
+  task,
   onClose,
-  onSubmit,
-  teamId,
+  onUpdate,
 }) => {
-  const [title, setTitle] = useState('');
-  const [description, setDescription] = useState('');
-  const [priority, setPriority] = useState<TaskType['priority']>('LOW');
-  const [assignedToId, setAssignedToId] = useState<string | undefined>(
-    undefined
+  const [title, setTitle] = React.useState(task.title);
+  const [description, setDescription] = React.useState(task.description || '');
+  const [priority, setPriority] = React.useState<TaskType['priority']>(
+    task.priority
   );
-  const [deadline, setDeadline] = useState<string>('');
-  const [teamMembers, setTeamMembers] = useState<TeamMember[]>([]);
-  const [isLoading, setIsLoading] = useState(false);
+  const [status, setStatus] = React.useState<TaskType['status']>(task.status);
+  const [assignedToId, setAssignedToId] = React.useState<string | undefined>(
+    task.assignedToId
+  );
+  const [deadline, setDeadline] = React.useState<string>(
+    task.deadline ? new Date(task.deadline).toISOString().split('T')[0] : ''
+  );
+  const [teamMembers, setTeamMembers] = React.useState<TeamMember[]>([]);
+  const [isLoading, setIsLoading] = React.useState(false);
 
-  useEffect(() => {
+  React.useEffect(() => {
     const fetchTeamMembers = async () => {
       try {
         setIsLoading(true);
-        const team = await teamsApi.getTeamWithMembers(teamId);
+        const team = await teamsApi.getTeamWithMembers(task.teamId);
         setTeamMembers(team.members);
       } catch (err) {
         console.error('Failed to fetch team members:', err);
@@ -71,31 +50,46 @@ const CreateTaskModal: React.FC<CreateTaskModalProps> = ({
     };
 
     fetchTeamMembers();
-  }, [teamId]);
+  }, [task.teamId]);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
     if (!title.trim()) return;
 
-    onSubmit({
-      title,
-      description: description || undefined,
-      priority,
-      assignedToId: assignedToId,
-      deadline: deadline ? new Date(deadline).toISOString() : undefined,
-      teamId,
-    });
+    try {
+      if (!assignedToId && status !== task.status) {
+        const userData = localStorage.getItem('user');
+        if (userData) {
+          const currentUser = JSON.parse(userData);
+          setAssignedToId(currentUser.id);
+        }
+      }
+
+      await tasksApi.updateTask(task.id, {
+        title,
+        description: description || undefined,
+        priority,
+        status,
+        assignedToId: assignedToId,
+        deadline: deadline ? new Date(deadline).toISOString() : undefined,
+      });
+
+      onUpdate();
+      onClose();
+    } catch (error) {
+      console.error('Failed to update task:', error);
+    }
   };
 
   return (
-    <div className="fixed inset-0 flex items-center justify-center z-50">
+    <div className="fixed inset-0  flex items-center justify-center z-50">
       <div
         className="absolute inset-0 bg-black opacity-50 -z-50"
         onClick={onClose}
       ></div>
       <div className="bg-white rounded-lg p-6 w-full max-w-md">
-        <h2 className="text-xl font-bold mb-4">Create New Task</h2>
+        <h2 className="text-xl font-bold mb-4">Edit Task</h2>
 
         <form onSubmit={handleSubmit}>
           <div className="mb-4">
@@ -119,6 +113,21 @@ const CreateTaskModal: React.FC<CreateTaskModalProps> = ({
               className="w-full p-2 border rounded"
               rows={3}
             />
+          </div>
+
+          <div className="mb-4">
+            <label className="block text-sm font-medium mb-1">Status</label>
+            <select
+              value={status}
+              onChange={(e) => setStatus(e.target.value as TaskType['status'])}
+              className="w-full p-2 border rounded"
+            >
+              <option value="UNASSIGNED">Unassigned</option>
+              <option value="IN_PROGRESS">In Progress</option>
+              <option value="TESTING">Testing</option>
+              <option value="COMPLETED">Completed</option>
+              <option value="CANCELLED">Cancelled</option>
+            </select>
           </div>
 
           <div className="mb-4">
@@ -178,7 +187,7 @@ const CreateTaskModal: React.FC<CreateTaskModalProps> = ({
               className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
               disabled={!title.trim() || isLoading}
             >
-              Create Task
+              Update Task
             </button>
           </div>
         </form>
@@ -187,4 +196,4 @@ const CreateTaskModal: React.FC<CreateTaskModalProps> = ({
   );
 };
 
-export default CreateTaskModal;
+export default EditTaskModal;

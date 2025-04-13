@@ -7,6 +7,7 @@ import React from 'react';
 interface TaskCardProps {
   task: TaskType;
   onStatusChange?: () => void;
+  onViewDetails: (task: TaskType) => void;
 }
 
 const priorityColors = {
@@ -16,10 +17,7 @@ const priorityColors = {
   URGENT: 'bg-red-100',
 };
 
-const TaskCard: React.FC<TaskCardProps> = ({
-  task,
-  // onStatusChange
-}) => {
+const TaskCard: React.FC<TaskCardProps> = ({ task, onViewDetails }) => {
   const { attributes, listeners, setNodeRef, transform } = useDraggable({
     id: task.id,
     data: {
@@ -31,12 +29,23 @@ const TaskCard: React.FC<TaskCardProps> = ({
     transform: CSS.Translate.toString(transform),
   };
 
+  const handleClick = (e: React.MouseEvent) => {
+    // Prevent the click from triggering drag
+    if (
+      e.target === e.currentTarget ||
+      (e.target as HTMLElement).tagName !== 'BUTTON'
+    ) {
+      onViewDetails(task);
+    }
+  };
+
   return (
     <div
       ref={setNodeRef}
       style={style}
       {...listeners}
       {...attributes}
+      onClick={handleClick}
       className="p-3 bg-white rounded shadow border cursor-move hover:shadow-md transition-shadow"
     >
       <div className="flex justify-between items-start">
@@ -67,7 +76,9 @@ const TaskCard: React.FC<TaskCardProps> = ({
               <Image
                 src={task.assignedTo.avatarUrl}
                 alt={task.assignedTo.username}
-                className="w-5 h-5 rounded-full mr-1"
+                width={20}
+                height={20}
+                className="rounded-full mr-1"
               />
             ) : (
               <div className="w-5 h-5 rounded-full bg-gray-300 mr-1" />
