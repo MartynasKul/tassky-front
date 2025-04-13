@@ -1,10 +1,10 @@
 'use client';
 
+import CreateTaskModal from '../components/ui/CreateTaskModal';
+import TaskCard from '../components/ui/TaskCard';
+import TaskColumn from '../components/ui/TaskColumn';
 import TaskDetailsModal from '../components/ui/TaskDetailModal';
 import EditTaskModal from '../components/ui/TaskEditModal';
-import CreateTaskModal from '@/app/components/ui/CreateTaskModal';
-import TaskCard from '@/app/components/ui/TaskCard';
-import TaskColumn from '@/app/components/ui/TaskColumn';
 import { tasksApi } from '@/utils/api';
 import {
   DndContext,
