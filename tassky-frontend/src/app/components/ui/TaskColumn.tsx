@@ -1,4 +1,4 @@
-import TaskCard from './taskCard_TEMP';
+import TaskCard from './TaskCard';
 import { TaskType } from '@/app/board/page';
 import { useDroppable } from '@dnd-kit/core';
 import React from 'react';

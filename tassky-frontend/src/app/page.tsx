@@ -1,7 +1,7 @@
 'use client';
 
 import WaveDecoration from './components/ui/waves';
-import { Button } from '@/app/components/ui/button_TEMP';
+import { Button } from '@/app/components/ui/Button';
 import { useRouter } from 'next/navigation';
 import React from 'react';
 
