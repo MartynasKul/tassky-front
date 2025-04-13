@@ -16,7 +16,10 @@ const priorityColors = {
   URGENT: 'bg-red-100',
 };
 
-const TaskCard: React.FC<TaskCardProps> = ({ task, onStatusChange }) => {
+const TaskCard: React.FC<TaskCardProps> = ({
+  task,
+  // onStatusChange
+}) => {
   const { attributes, listeners, setNodeRef, transform } = useDraggable({
     id: task.id,
     data: {
