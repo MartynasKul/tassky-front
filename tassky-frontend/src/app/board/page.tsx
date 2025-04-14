@@ -1,7 +1,6 @@
 'use client';
 
 import CreateTaskModal from '../components/ui/CreateTaskModal';
-import TaskCard from '../components/ui/TaskCard';
 import TaskColumn from '../components/ui/TaskColumn';
 import TaskDetailsModal from '../components/ui/TaskDetailModal';
 import EditTaskModal from '../components/ui/TaskEditModal';
@@ -174,7 +173,7 @@ function BoardContent() {
     //Temporarily making refreshes be handled via programatical refreshes
     const pollInterval = setInterval(() => {
       fetchTasks();
-    }, 10000); //Polling is done manually every 10 seconds for now.
+    }, 100000); //Polling is done manually every 10 seconds for now.
 
     return () => {
       clearInterval(pollInterval);
@@ -193,17 +192,13 @@ function BoardContent() {
       const newStatus = over.id as TaskType['status'];
 
       try {
-        // Optimistically update UI
         setTasks((currentTasks) =>
           currentTasks.map((task) =>
             task.id === taskId ? { ...task, status: newStatus } : task
           )
         );
-
-        // Update in backend
         await tasksApi.updateTaskStatus(taskId, newStatus);
 
-        // Auto-assign task to current user if moving to IN_PROGRESS and not already assigned
         if (
           newStatus === 'IN_PROGRESS' &&
           !tasks.find((t) => t.id === taskId)?.assignedToId
@@ -275,13 +270,12 @@ function BoardContent() {
       <div className="flex justify-between items-center mb-6">
         <h1 className="text-2xl font-bold">Board</h1>
       </div>
-
       <DndContext
         sensors={sensors}
         collisionDetection={closestCenter}
         onDragEnd={handleDragEnd}
       >
-        <div className="grid grid-cols-4 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
           <TaskColumn
             title="In Progress"
             status="IN_PROGRESS"
@@ -311,30 +305,18 @@ function BoardContent() {
             onViewTaskDetails={handleViewTaskDetails}
           />
         </div>
+        <div className="mt-8 pt-8 ">
+          <TaskColumn
+            title="Backlog"
+            status="UNASSIGNED"
+            tasks={tasksByStatus.UNNASIGNED}
+            color="bg-gray-200"
+            onViewTaskDetails={handleViewTaskDetails}
+            showAddButton={true}
+            onAddTask={toggleModal}
+          />
+        </div>{' '}
       </DndContext>
-
-      <div className="mt-8 border rounded-lg p-4">
-        <div className="flex justify-between items-center mb-4">
-          <h2 className="text-lg font-medium">Backlog</h2>
-          <button
-            onClick={toggleCreateModal}
-            className="px-4 py-2 bg-white border border-black rounded-full hover:bg-gray-200"
-          >
-            Add task
-          </button>
-        </div>
-
-        <div className="space-y-2">
-          {tasksByStatus.UNNASIGNED.map((task) => (
-            <TaskCard
-              key={task.id}
-              task={task}
-              onStatusChange={fetchTasks}
-              onViewDetails={handleViewTaskDetails}
-            />
-          ))}
-        </div>
-      </div>
 
       {isCreateModalOpen && teamId && (
         <CreateTaskModal
@@ -343,7 +325,6 @@ function BoardContent() {
           teamId={teamId}
         />
       )}
-
       {isDetailsModalOpen && selectedTask && (
         <TaskDetailsModal
           task={selectedTask}
@@ -353,7 +334,6 @@ function BoardContent() {
           onEdit={handleEditTask}
         />
       )}
-
       {isEditModalOpen && selectedTask && (
         <EditTaskModal
           task={selectedTask}
