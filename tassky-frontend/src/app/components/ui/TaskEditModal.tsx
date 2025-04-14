@@ -1,3 +1,5 @@
+'use client';
+
 import { TaskType } from '@/app/board/page';
 import { tasksApi, teamsApi } from '@/utils/api';
 import React from 'react';
