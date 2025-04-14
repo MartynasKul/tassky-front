@@ -27,38 +27,43 @@ const TaskCard: React.FC<TaskCardProps> = ({ task, onViewDetails }) => {
       status: task.status,
     },
   });
+
   const style = {
     transform: CSS.Translate.toString(transform),
   };
 
-  const handleClick = (e: React.MouseEvent) => {
-    // Prevent the click from triggering drag
-    if (
-      e.target === e.currentTarget ||
-      (e.target as HTMLElement).tagName !== 'BUTTON'
-    ) {
-      onViewDetails(task);
-    }
+  const handleClick = () => {
+    onViewDetails(task);
   };
 
   return (
     <div
       ref={setNodeRef}
       style={style}
-      {...listeners}
       {...attributes}
+      className="p-3 bg-white rounded-xl shadow border cursor-pointer hover:shadow-md transition-shadow"
       onClick={handleClick}
-      className="p-3 bg-white rounded shadow border cursor-move hover:shadow-md transition-shadow"
     >
       <div className="flex justify-between items-start">
-        <h3 className="font-medium">{task.title}</h3>
-        <span
-          className={`px-2 py-1 text-xs rounded-full ${
-            priorityColors[task.priority]
-          }`}
+        {/* <h3 className="font-medium">{task.title}</h3> */}
+        <div className="space-y-1">
+          <h3 className="font-medium">{task.title}</h3>
+        </div>{' '}
+        <div
+          className="cursor-grab p-1 flex flex-col items-end "
+          {...listeners}
+          onClick={(e) => e.stopPropagation()}
         >
-          {task.priority}
-        </span>
+          <span className="text-gray-400 hover:text-gray-600">🟰</span>
+
+          <span
+            className={`text-[10px] px-2 py-[2px] rounded-full whitespace-nowrap space-y-1 ${
+              priorityColors[task.priority]
+            }`}
+          >
+            {task.priority}
+          </span>
+        </div>{' '}
       </div>
 
       {task.description && (
