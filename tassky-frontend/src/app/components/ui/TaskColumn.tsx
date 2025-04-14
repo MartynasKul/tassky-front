@@ -1,3 +1,5 @@
+'use client';
+
 import TaskCard from './TaskCard';
 import { TaskType } from '@/app/board/page';
 import { useDroppable } from '@dnd-kit/core';

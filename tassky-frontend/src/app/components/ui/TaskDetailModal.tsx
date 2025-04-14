@@ -1,3 +1,5 @@
+'use client';
+
 import { TaskType } from '@/app/board/page';
 import { Comment } from '@/app/types/types';
 import { tasksApi } from '@/utils/api';

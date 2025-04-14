@@ -1,3 +1,5 @@
+'use client';
+
 import { TaskType } from '@/app/board/page';
 import { useDraggable } from '@dnd-kit/core';
 import { CSS } from '@dnd-kit/utilities';
