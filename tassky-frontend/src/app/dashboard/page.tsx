@@ -277,8 +277,7 @@ export default function Dashboard() {
                     <div>
                       <button
                         onClick={() => {
-                          console.log('Go board button pressed');
-                          router.push('/kanbanBoard');
+                          router.push(`/board?teamId=${selectedTeam.id}`);
                         }}
                         className="rounded-xl px-10 py-2 bg-violet-400 hover:bg-violet-500 text-white font-semibold shadow-ld transition duration-300 ease-in-out transform hover:scale-105"
                       >

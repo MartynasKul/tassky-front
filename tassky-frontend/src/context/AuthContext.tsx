@@ -1,5 +1,7 @@
 'use client';
 
+import { api } from '@/utils/api';
+import { jwtDecode } from 'jwt-decode';
 import { useRouter, usePathname } from 'next/navigation';
 import {
   createContext,
@@ -8,6 +10,11 @@ import {
   useEffect,
   ReactNode,
 } from 'react';
+
+interface DecodedToken {
+  exp: number;
+  [key: string]: unknown;
+}
 
 interface AuthContextType {
   isLoggedIn: boolean;
@@ -25,18 +32,23 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const router = useRouter();
   const pathname = usePathname();
 
-  // Protected routes configuration
-  const protectedRoutes = ['/profile', '/dashboard', '/tasks', '/kanbanBoard'];
+  // Route protection For loggedIn/ not loggedIn
+  const protectedRoutes = [
+    '/profile',
+    '/dashboard',
+    '/tasks',
+    '/board',
+    '/Board',
+    '/achievements',
+  ];
   const publicOnlyRoutes = ['/login', '/register', '/forgotPassword'];
 
   useEffect(() => {
     checkAuthStatus();
   }, []);
 
-  // Route protection logic
   useEffect(() => {
     if (!isLoading) {
-      // If user is not logged in and trying to access protected route
       if (
         !isLoggedIn &&
         protectedRoutes.some((route) => pathname.startsWith(route))
@@ -44,19 +56,55 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         router.push('/');
       }
 
-      // If user is logged in and trying to access public-only routes
       if (isLoggedIn && publicOnlyRoutes.includes(pathname)) {
         router.push('/dashboard');
       }
     }
   }, [pathname, isLoggedIn, isLoading, router]);
 
-  const checkAuthStatus = () => {
+  async function tryRefreshToken() {
+    try {
+      const res = await api.post('/auth/refresh');
+
+      /*  const res = await fetch('/api/auth/refresh',{
+        method: POST,
+        headers: {
+          'Auhtorization': `Bearer ${localStorage.getItem('access_token')}`;
+        },
+        });*/
+
+      if (!res) throw new Error('Refresh failed');
+
+      const data = await res.data;
+
+      localStorage.setItem('access_token', data.access_token);
+      localStorage.setItem('user', JSON.stringify(data.user));
+      return true;
+    } catch (error) {
+      console.error('Error refreshing token:', error);
+      return false;
+    }
+  }
+  const checkAuthStatus = async () => {
     setIsLoading(true);
     try {
       // Check if window is available (for Next.js)
       if (typeof window !== 'undefined') {
         const token = localStorage.getItem('access_token');
+
+        if (token) {
+          const decoded: DecodedToken = jwtDecode(token);
+          const currentTime = Math.floor(Date.now() / 1000);
+
+          if (decoded.exp && decoded.exp > currentTime) {
+            setIsLoggedIn(true);
+          } else {
+            const refreshed = await tryRefreshToken();
+
+            logout();
+            setIsLoggedIn(refreshed);
+          }
+        }
         setIsLoggedIn(!!token);
       }
     } catch (error) {

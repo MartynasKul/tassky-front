@@ -1,7 +1,7 @@
 'use client';
 
-import { Button } from '../components/ui/button';
-import { Input } from '../components/ui/input';
+import { Button } from '@/app/components/ui/Button';
+import { Input } from '@/app/components/ui/Input';
 import { useAuth } from '@/context/AuthContext';
 import { LoginDto } from '@/types/auth';
 // import { apiLocal } from '@/utils/api';
@@ -35,14 +35,12 @@ export default function Login() {
 
     try {
       const response = await api.post('auth/login', formData);
-      // Successful login
       if (response.status === 200) {
         login(response.data.access_token, response.data.user);
       }
     } catch (err: unknown) {
       const error = err as AxiosError;
       if (error.response) {
-        // Handle specific error responses
         switch (error.response.status) {
           case 401:
             setError('Invalid email or password');
@@ -63,16 +61,6 @@ export default function Login() {
     <div className="flex items-center justify-center w-full h-full">
       <div className="max-w-md w-full bg-white rounded-[40px] overflow-hidden shadow-2xl">
         <div className="flex flex-col items-center justify-center p-10 py-12 relative">
-          {/* Decorative wave lines on left side
-        <div className="absolute left-6 top-0 bottom-0 flex flex-col justify-center space-y-8">
-          <WaveDecoration side={'left'} />
-        </div>
-
-        {/* Decorative wave lines on right side 
-        <div className="absolute right-6 top-0 bottom-0 flex flex-col justify-center space-y-8">
-          <WaveDecoration side={'right'} />
-        </div> */}
-
           <h1 className="text-3xl font-bold mb-8 text-center text-black">
             Login
           </h1>
