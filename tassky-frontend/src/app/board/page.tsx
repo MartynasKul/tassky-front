@@ -22,7 +22,7 @@ import {
   // verticalListSortingStrategy,
 } from '@dnd-kit/sortable';
 import { useSearchParams } from 'next/navigation';
-import React from 'react';
+import React, { Suspense } from 'react';
 
 //import io from 'socket.io-client'; FOR DEMONSTRATION SOCKETS ARE DISABLED
 
@@ -50,8 +50,18 @@ export type TaskType = {
   };
   teamId: string;
 };
-
 export default function Board() {
+  return (
+    <Suspense
+      fallback={
+        <div className="flex jsutify-center p-8"> Loading board...</div>
+      }
+    >
+      <BoardContent />
+    </Suspense>
+  );
+}
+function BoardContent() {
   //temporary fix beacuse next/navigation router doesnt allow for prop forwarding
   const searchParams = useSearchParams();
   const teamId = searchParams.get('teamId');
