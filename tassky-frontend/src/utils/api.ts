@@ -102,12 +102,6 @@ export const teamsApi = {
     const response = await api.post(`/teams/${teamId}/refresh-invite`);
     return response.data;
   },
-
-  // // Get current user information NEED TO ADD TO BACKEND AS I FORGOT
-  // getCurrentUser: async () => {
-  //   const response = await api.get('/users/me');
-  //   return response.data;
-  // },
 };
 
 export const tasksApi = {
@@ -185,6 +179,56 @@ export const tasksApi = {
 
   addTaskComment: async (id: string, content: string) => {
     const response = await api.post(`/tasks/${id}/comments`, { content });
+    return response.data;
+  },
+};
+
+export const usersApi = {
+  getCurrentUser: async () => {
+    const userString = localStorage.getItem('user');
+    if (!userString) {
+      return null;
+    }
+    const user = JSON.parse(userString);
+    return user;
+  },
+
+  getUserProfile: async (id: string) => {
+    const response = await api.get(`/users/${id}`);
+    return response.data;
+  },
+
+  updateUserProfile: async (
+    id: string,
+    userData: {
+      email?: string;
+      username?: string;
+      password?: string;
+      firstName?: string;
+      lastName?: string;
+      avatarUrl?: string;
+    }
+  ) => {
+    const response = await api.patch(`/users/${id}`, userData);
+    // Update the local storage with the new user data
+    const currentUser = JSON.parse(localStorage.getItem('user') || '{}');
+    const updatedUser = { ...currentUser, ...response.data };
+    localStorage.setItem('user', JSON.stringify(updatedUser));
+    return response.data;
+  },
+
+  getUserAchievements: async (id: string) => {
+    const response = await api.get(`/users/${id}/achievements`);
+    return response.data;
+  },
+
+  getUserTeams: async (id: string) => {
+    const response = await api.get(`/users/${id}/teams`);
+    return response.data;
+  },
+
+  getUserTasks: async (id: string) => {
+    const response = await api.get(`/users/${id}/tasks`);
     return response.data;
   },
 };

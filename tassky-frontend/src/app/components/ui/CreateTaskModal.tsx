@@ -1,17 +1,13 @@
 'use client';
 
-// import { TaskType } from '@/app/board/page';
 import { teamsApi } from '@/utils/api';
 import React, { useState, useEffect } from 'react';
-
-// Adjust path as needed
 
 export type TaskType = {
   id: string;
   title: string;
   description?: string;
   priority: 'LOW' | 'MEDIUM' | 'HIGH' | 'URGENT';
-  // status: 'UNASSIGNED' | 'IN_PROGRESS' | 'TESTING' | 'COMPLETED' | 'CANCELLED';
   createdAt: string;
   updatedAt: string;
   deadline?: string;
@@ -93,10 +89,10 @@ const CreateTaskModal: React.FC<CreateTaskModalProps> = ({
   return (
     <div className="fixed inset-0 flex items-center justify-center z-50">
       <div
-        className="absolute inset-0 bg-black opacity-50 -z-50"
+        className="absolute inset-0 bg-black opacity-50 -z-10"
         onClick={onClose}
       ></div>
-      <div className="bg-white rounded-lg p-6 w-full max-w-md">
+      <div className="bg-white bg-gradient-to-b from-white to-violet-200 rounded-lg p-6 w-full max-w-md">
         <h2 className="text-xl font-bold mb-4">Create New Task</h2>
 
         <form onSubmit={handleSubmit}>
@@ -105,8 +101,9 @@ const CreateTaskModal: React.FC<CreateTaskModalProps> = ({
             <input
               type="text"
               value={title}
+              placeholder="Task title...."
               onChange={(e) => setTitle(e.target.value)}
-              className="w-full p-2 border rounded"
+              className="w-full p-2 border-b-4 shadow-md rounded-xl bg-white transition duration-300 hover:scale-102"
               required
             />
           </div>
@@ -117,8 +114,9 @@ const CreateTaskModal: React.FC<CreateTaskModalProps> = ({
             </label>
             <textarea
               value={description}
+              placeholder="Task description..."
               onChange={(e) => setDescription(e.target.value)}
-              className="w-full p-2 border rounded"
+              className="w-full p-2 border-b-4 shadow-md bg-white rounded-xl transition duration-300 hover:scale-102"
               rows={3}
             />
           </div>
@@ -130,7 +128,7 @@ const CreateTaskModal: React.FC<CreateTaskModalProps> = ({
               onChange={(e) =>
                 setPriority(e.target.value as TaskType['priority'])
               }
-              className="w-full p-2 border rounded"
+              className="w-full p-2 border-b-4 shadow-md bg-white rounded-xl transition duration-300 hover:scale-102"
             >
               <option value="LOW">Low</option>
               <option value="MEDIUM">Medium</option>
@@ -144,7 +142,7 @@ const CreateTaskModal: React.FC<CreateTaskModalProps> = ({
             <select
               value={assignedToId || ''}
               onChange={(e) => setAssignedToId(e.target.value || undefined)}
-              className="w-full p-2 border rounded"
+              className="w-full p-2 border-b-4 shadow-md bg-white rounded-xl transition duration-300 hover:scale-102"
             >
               <option value="">Unassigned</option>
               {teamMembers.map((member) => (
@@ -163,7 +161,7 @@ const CreateTaskModal: React.FC<CreateTaskModalProps> = ({
               type="date"
               value={deadline}
               onChange={(e) => setDeadline(e.target.value)}
-              className="w-full p-2 border rounded"
+              className="w-full p-2 border-b-4 shadow-md bg-white rounded-xl transition duration-300 hover:scale-102"
             />
           </div>
 
@@ -171,13 +169,13 @@ const CreateTaskModal: React.FC<CreateTaskModalProps> = ({
             <button
               type="button"
               onClick={onClose}
-              className="px-4 py-2 border rounded hover:bg-gray-100"
+              className="rounded-xl px-5 py-2 bg-red-300 hover:bg-red-500 text-white font-semibold shadow-lg transition duration-300 ease-in-out transform hover:scale-105"
             >
               Cancel
             </button>
             <button
               type="submit"
-              className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
+              className="rounded-xl px-6 py-2 bg-violet-400 hover:bg-violet-500 text-white font-semibold shadow-lg transition duration-300 ease-in-out transform hover:scale-105"
               disabled={!title.trim() || isLoading}
             >
               Create Task

@@ -37,13 +37,13 @@ const TaskColumn: React.FC<TaskColumnProps> = ({
     >
       <div className="flex justify-between items-center mb-4">
         <h2 className="text-lg font-medium">{title}</h2>
-        <span className="bg-white px-2 py-1 rounded-full text-sm">
+        <span className="bg-white px-2 py-1 rounded-full font-bold text-sm">
           {tasks.length}
         </span>
         {showAddButton && onAddTask && (
           <button
             onClick={onAddTask}
-            className="ml-2 px-3 py-1 bg-white border border-black rounded-full hover:bg-gray-200 text-sm"
+            className="rounded-xl px-4 py-2 bg-violet-400 hover:bg-violet-500 text-white font-semibold shadow-lg transition duration-300 ease-in-out transform hover:scale-105 "
           >
             Add
           </button>

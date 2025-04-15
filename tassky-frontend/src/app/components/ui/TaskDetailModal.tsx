@@ -115,27 +115,27 @@ const TaskDetailsModal: React.FC<TaskDetailsModalProps> = ({
         className="absolute inset-0 bg-black opacity-50 -z-50"
         onClick={onClose}
       ></div>
-      <div className="bg-white rounded-lg p-6 w-full max-w-2xl max-h-screen overflow-y-auto">
+      <div className="bg-white bg-gradient-to-b from-white to-violet-300 rounded-lg p-6 w-full max-w-2xl max-h-screen overflow-y-auto">
         <div className="flex justify-between items-start mb-4">
           <h2 className="text-2xl font-bold">{task.title}</h2>
           <div className="flex space-x-2">
             <button
               onClick={() => onEdit(task)}
-              className="px-3 py-1 bg-blue-500 text-white rounded hover:bg-blue-600"
+              className="rounded-xl px-6 py-2 bg-violet-400 hover:bg-violet-500 text-white font-semibold shadow-lg transition duration-300 ease-in-out transform hover:scale-105"
             >
               Edit
             </button>
             <button
               onClick={handleDeleteTask}
-              className="px-3 py-1 bg-red-500 text-white rounded hover:bg-red-600"
+              className="rounded-xl px-5 py-2 bg-red-300 hover:bg-red-500 text-white font-semibold shadow-lg transition duration-300 ease-in-out transform hover:scale-105"
             >
               Delete
             </button>
             <button
               onClick={onClose}
-              className="px-3 py-1 bg-gray-200 rounded hover:bg-gray-300"
+              className="px-3 py-1  rounded-full hover:bg-gray-200"
             >
-              Close
+              ✕
             </button>
           </div>
         </div>
@@ -252,13 +252,13 @@ const TaskDetailsModal: React.FC<TaskDetailsModalProps> = ({
               value={newComment}
               onChange={(e) => setNewComment(e.target.value)}
               placeholder="Add a comment..."
-              className="flex-grow p-2 border rounded resize-none"
+              className="flex-grow p-2 border-b-4 rounded-xl bg-violet-100 resize-none transition duration-300 hover:scale-102"
               rows={2}
             />
             <button
               type="submit"
               disabled={!newComment.trim()}
-              className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 disabled:bg-gray-300"
+              className="rounded-xl px-6 py-2 bg-violet-400 hover:bg-violet-500 text-white font-semibold shadow-lg transition duration-300 ease-in-out transform hover:scale-105"
             >
               Post
             </button>
