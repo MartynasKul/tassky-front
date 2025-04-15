@@ -43,12 +43,7 @@ export default function Header() {
                 >
                   Dashboard
                 </Link>
-                <Link
-                  href="/explore"
-                  className="rounded-full px-10 py-2 bg-violet-400 hover:bg-violet-500 text-white font-semibold shadow-lg transition duration-300 ease-in-out transform hover:scale-105"
-                >
-                  Explore
-                </Link>
+
                 <Link
                   href="/about"
                   className="rounded-full px-10 py-2 bg-violet-400 hover:bg-violet-500 text-white font-semibold shadow-lg transition duration-300 ease-in-out transform hover:scale-105"
@@ -74,12 +69,6 @@ export default function Header() {
             ) : (
               // Guest navigation
               <>
-                <Link
-                  href="/explore"
-                  className="rounded-full px-10 py-2 bg-violet-400 hover:bg-violet-500 text-white font-semibold shadow-lg transition duration-300 ease-in-out transform hover:scale-105"
-                >
-                  Explore
-                </Link>
                 <Link
                   href="/about"
                   className="rounded-full px-10 py-2 bg-violet-400 hover:bg-violet-500 text-white font-semibold shadow-lg transition duration-300 ease-in-out transform hover:scale-105"
