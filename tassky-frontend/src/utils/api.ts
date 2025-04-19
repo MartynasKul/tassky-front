@@ -233,4 +233,34 @@ export const usersApi = {
   },
 };
 
+export const commentsApi = {
+  getTaskComments: async (taskId: string) => {
+    const response = await api.get(`/comments?taskId=${taskId}`);
+    return response.data;
+  },
+
+  addComment: async (content: string, taskId: string) => {
+    const response = await api.post('/comments', {
+      content,
+      taskId,
+    });
+    return response.data;
+  },
+
+  deleteComment: async (commentId: string) => {
+    await api.delete(`/comments/${commentId}`);
+    return true;
+  },
+
+  updateComment: async (commentId: string, content: string) => {
+    const response = await api.patch(`/comments/${commentId}`, { content });
+    return response.data;
+  },
+
+  getUserComments: async () => {
+    const response = await api.get('comments/me');
+    return response.data;
+  },
+};
+
 export default api;
