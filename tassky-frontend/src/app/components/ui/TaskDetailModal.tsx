@@ -3,6 +3,7 @@
 import { TaskType } from '@/app/board/page';
 import { Comment } from '@/app/types/types';
 import { tasksApi } from '@/utils/api';
+import { commentsApi } from '@/utils/api';
 import Image from 'next/image';
 import React from 'react';
 
@@ -46,13 +47,10 @@ const TaskDetailsModal: React.FC<TaskDetailsModalProps> = ({
   const fetchComments = async () => {
     try {
       setIsLoading(true);
-      const response = await fetch(`/api/comments?taskId=${task.id}`);
-      if (response.ok) {
-        const data = await response.json();
-        setComments(data);
-      }
+      const data = await commentsApi.getTaskComments(task.id);
+      setComments(data);
     } catch (error) {
-      console.error('Failed to fetch comments:', error);
+      console.error('Failed to fetch commentds', error);
     } finally {
       setIsLoading(false);
     }
@@ -63,35 +61,18 @@ const TaskDetailsModal: React.FC<TaskDetailsModalProps> = ({
     if (!newComment.trim()) return;
 
     try {
-      const response = await fetch('/api/comments', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          content: newComment,
-          taskId: task.id,
-        }),
-      });
-
-      if (response.ok) {
-        setNewComment('');
-        fetchComments();
-      }
+      await commentsApi.addComment(newComment, task.id);
+      setNewComment('');
+      fetchComments();
     } catch (error) {
-      console.error('Failed to add comment:', error);
+      console.log('Failed to add comment:', error);
     }
   };
 
   const handleDeleteComment = async (commentId: string) => {
     try {
-      const response = await fetch(`/api/comments/${commentId}`, {
-        method: 'DELETE',
-      });
-
-      if (response.ok) {
-        fetchComments();
-      }
+      await commentsApi.deleteComment(commentId);
+      fetchComments();
     } catch (error) {
       console.error('Failed to delete comment:', error);
     }
@@ -213,7 +194,7 @@ const TaskDetailsModal: React.FC<TaskDetailsModalProps> = ({
                 <p className="text-gray-500">No comments yet</p>
               ) : (
                 comments.map((comment) => (
-                  <div key={comment.id} className="bg-gray-50 p-3 rounded">
+                  <div key={comment.id} className="bg-gray-50 p-3 rounded-xl">
                     <div className="flex justify-between items-start">
                       <div className="flex items-center">
                         <div className="w-6 h-6 rounded-full bg-gray-300 mr-2" />
