@@ -29,12 +29,14 @@ interface TeamAdminPanelProps {
   team: Team;
   onClose: () => void;
   onTeamUpdate: (updatedTeam: Team) => void;
+  onTeamDelete: () => void;
 }
 
 export default function TeamAdminPanel({
   team,
   onClose,
   onTeamUpdate,
+  onTeamDelete,
 }: TeamAdminPanelProps) {
   const [teamData, setTeamData] = React.useState<Team>(team);
   const [nameInput, setNameInput] = React.useState<string>(team.name);
@@ -82,7 +84,6 @@ export default function TeamAdminPanel({
       setLoading(true);
       await teamsApi.removeMember(team.id, memberId);
 
-      // Update local state to remove the member
       const updatedMembers = teamData.members.filter((m) => m.id !== memberId);
       const updatedTeam = { ...teamData, members: updatedMembers };
       setTeamData(updatedTeam);
@@ -97,41 +98,14 @@ export default function TeamAdminPanel({
     }
   };
 
-  // const changeRole = async (
-  //   memberId: string,
-  //   newRole: 'ADMIN' | 'CAPTAIN' | 'MEMBER'
-  // ) => {
-  //   try {
-  //     setLoading(true);
-  //     await teamsApi.changeRole(team.id, memberId, newRole);
-
-  //     // Update local state with the new role
-  //     const updatedMembers = teamData.members.map((member) =>
-  //       member.id === memberId ? { ...member, role: newRole } : member
-  //     );
-
-  //     const updatedTeam = { ...teamData, members: updatedMembers };
-  //     setTeamData(updatedTeam);
-  //     onTeamUpdate(updatedTeam);
-
-  //     toast.success('Role updated successfully');
-  //   } catch (error) {
-  //     console.error('Failed to change role:', error);
-  //     toast.error('Failed to update role');
-  //   } finally {
-  //     setLoading(false);
-  //   }
-  // };
   const changeRole = async (
     memberId: string,
     newRole: 'ADMIN' | 'CAPTAIN' | 'MEMBER'
   ) => {
     try {
       setLoading(true);
-      // Make sure we're sending the role as a string, not an enum or other format
       await teamsApi.changeRole(team.id, memberId, newRole);
 
-      // Update local state with the new role
       const updatedMembers = teamData.members.map((member) =>
         member.id === memberId ? { ...member, role: newRole } : member
       );
@@ -158,12 +132,20 @@ export default function TeamAdminPanel({
       <div className="bg-white rounded-lg p-6 max-w-4xl w-full max-h-[90vh] overflow-y-auto bg-gradient-to-b from-white to-violet-300">
         <div className="flex justify-between items-center mb-6">
           <h2 className="text-2xl font-bold">Team Admin Panel</h2>
-          <button
-            onClick={onClose}
-            className="rounded-xl px-10 py-2 bg-violet-400 hover:bg-violet-500 text-white font-semibold shadow-lg transition duration-300 ease-in-out transform hover:scale-105"
-          >
-            Close
-          </button>
+          <div className="flex justify-center items-center mx-4">
+            <button
+              onClick={onTeamDelete}
+              className="rounded-xl px-5 py-2 bg-red-300 hover:bg-red-500 text-white font-semibold shadow-lg transition duration-300 ease-in-out transform hover:scale-105"
+            >
+              Delete Team
+            </button>
+            <button
+              onClick={onClose}
+              className="rounded-xl px-10 py-2 mx-2 bg-violet-400 hover:bg-violet-500 text-white font-semibold shadow-lg transition duration-300 ease-in-out transform hover:scale-105"
+            >
+              Close
+            </button>
+          </div>
         </div>
 
         {/* Team Information Section */}

@@ -3,13 +3,7 @@
 import { api } from '@/utils/api';
 import { jwtDecode } from 'jwt-decode';
 import { useRouter, usePathname } from 'next/navigation';
-import {
-  createContext,
-  useContext,
-  useState,
-  useEffect,
-  ReactNode,
-} from 'react';
+import React from 'react';
 
 interface DecodedToken {
   exp: number;
@@ -24,11 +18,11 @@ interface AuthContextType {
   checkAuthStatus: () => void;
 }
 
-const AuthContext = createContext<AuthContextType | undefined>(undefined);
+const AuthContext = React.createContext<AuthContextType | undefined>(undefined);
 
-export function AuthProvider({ children }: { children: ReactNode }) {
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
-  const [isLoading, setIsLoading] = useState(true);
+export function AuthProvider({ children }: { children: React.ReactNode }) {
+  const [isLoggedIn, setIsLoggedIn] = React.useState(false);
+  const [isLoading, setIsLoading] = React.useState(true);
   const router = useRouter();
   const pathname = usePathname();
 
@@ -43,11 +37,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   ];
   const publicOnlyRoutes = ['/login', '/register', '/forgotPassword'];
 
-  useEffect(() => {
+  React.useEffect(() => {
     checkAuthStatus();
   }, []);
 
-  useEffect(() => {
+  React.useEffect(() => {
     if (!isLoading) {
       if (
         !isLoggedIn &&
@@ -88,7 +82,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const checkAuthStatus = async () => {
     setIsLoading(true);
     try {
-      // Check if window is available (for Next.js)
       if (typeof window !== 'undefined') {
         const token = localStorage.getItem('access_token');
 
@@ -139,7 +132,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 }
 
 export function useAuth() {
-  const context = useContext(AuthContext);
+  const context = React.useContext(AuthContext);
   if (context === undefined) {
     throw new Error('useAuth must be used within an AuthProvider');
   }

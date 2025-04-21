@@ -3,7 +3,7 @@
 import EditProfileModal from '../components/ui/EditProfileModal';
 import { usersApi } from '@/utils/api';
 import { useRouter } from 'next/navigation';
-import { useState, useEffect } from 'react';
+import React from 'react';
 
 interface User {
   id: string;
@@ -18,12 +18,12 @@ interface User {
 }
 
 export default function ProfilePage() {
-  const [user, setUser] = useState<User | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
-  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [user, setUser] = React.useState<User | null>(null);
+  const [isLoading, setIsLoading] = React.useState(true);
+  const [isModalOpen, setIsModalOpen] = React.useState(false);
   const router = useRouter();
 
-  useEffect(() => {
+  React.useEffect(() => {
     async function loadUser() {
       try {
         setIsLoading(true);

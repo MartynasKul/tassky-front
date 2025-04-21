@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 
 interface JoinTeamModalProps {
   onClose: () => void;
@@ -9,9 +9,9 @@ export default function JoinTeamModal({
   onClose,
   onJoinTeam,
 }: JoinTeamModalProps) {
-  const [inviteCode, setInviteCode] = useState('');
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [error, setError] = useState('');
+  const [inviteCode, setInviteCode] = React.useState('');
+  const [isSubmitting, setIsSubmitting] = React.useState(false);
+  const [error, setError] = React.useState('');
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();

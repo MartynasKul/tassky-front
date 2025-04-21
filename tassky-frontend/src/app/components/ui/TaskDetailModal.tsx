@@ -32,7 +32,6 @@ const statusLabels = {
 const TaskDetailsModal: React.FC<TaskDetailsModalProps> = ({
   task,
   onClose,
-  // onUpdate,
   onDelete,
   onEdit,
 }) => {

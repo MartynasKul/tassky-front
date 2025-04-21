@@ -1,7 +1,7 @@
 'use client';
 
 import { teamsApi } from '@/utils/api';
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 
 export type TaskType = {
   id: string;
@@ -45,17 +45,17 @@ const CreateTaskModal: React.FC<CreateTaskModalProps> = ({
   onSubmit,
   teamId,
 }) => {
-  const [title, setTitle] = useState('');
-  const [description, setDescription] = useState('');
-  const [priority, setPriority] = useState<TaskType['priority']>('LOW');
-  const [assignedToId, setAssignedToId] = useState<string | undefined>(
+  const [title, setTitle] = React.useState('');
+  const [description, setDescription] = React.useState('');
+  const [priority, setPriority] = React.useState<TaskType['priority']>('LOW');
+  const [assignedToId, setAssignedToId] = React.useState<string | undefined>(
     undefined
   );
-  const [deadline, setDeadline] = useState<string>('');
-  const [teamMembers, setTeamMembers] = useState<TeamMember[]>([]);
-  const [isLoading, setIsLoading] = useState(false);
+  const [deadline, setDeadline] = React.useState<string>('');
+  const [teamMembers, setTeamMembers] = React.useState<TeamMember[]>([]);
+  const [isLoading, setIsLoading] = React.useState(false);
 
-  useEffect(() => {
+  React.useEffect(() => {
     const fetchTeamMembers = async () => {
       try {
         setIsLoading(true);
