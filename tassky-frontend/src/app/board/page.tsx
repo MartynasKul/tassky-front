@@ -14,12 +14,7 @@ import {
   useSensors,
   DragEndEvent,
 } from '@dnd-kit/core';
-import {
-  // arrayMove,
-  // SortableContext,
-  sortableKeyboardCoordinates,
-  // verticalListSortingStrategy,
-} from '@dnd-kit/sortable';
+import { sortableKeyboardCoordinates } from '@dnd-kit/sortable';
 import { useSearchParams } from 'next/navigation';
 import React, { Suspense } from 'react';
 
@@ -173,7 +168,7 @@ function BoardContent() {
     //Temporarily making refreshes be handled via programatical refreshes
     const pollInterval = setInterval(() => {
       fetchTasks();
-    }, 100000); //Polling is done manually every 10 seconds for now.
+    }, 100000); //Polling is done manually every 100 seconds for now.
 
     return () => {
       clearInterval(pollInterval);
@@ -210,11 +205,10 @@ function BoardContent() {
           }
         }
 
-        // Refresh tasks to ensure UI is in sync with backend
         fetchTasks();
       } catch (error) {
         console.error('Failed to update task status:', error);
-        fetchTasks(); // Revert UI if update fails
+        fetchTasks();
       }
     }
   };

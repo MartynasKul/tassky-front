@@ -2,7 +2,7 @@
 'use client';
 
 import { usersApi } from '@/utils/api';
-import { useState } from 'react';
+import React from 'react';
 
 interface User {
   id: string;
@@ -26,7 +26,7 @@ export default function EditProfileModal({
   onClose,
   onUpdateSuccess,
 }: EditProfileModalProps) {
-  const [formData, setFormData] = useState({
+  const [formData, setFormData] = React.useState({
     username: user.username || '',
     email: user.email || '',
     firstName: user.firstName || '',
@@ -35,8 +35,8 @@ export default function EditProfileModal({
     confirmPassword: '',
   });
 
-  const [errors, setErrors] = useState<Record<string, string>>({});
-  const [isLoading, setIsLoading] = useState(false);
+  const [errors, setErrors] = React.useState<Record<string, string>>({});
+  const [isLoading, setIsLoading] = React.useState(false);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -87,7 +87,6 @@ export default function EditProfileModal({
     setIsLoading(true);
 
     try {
-      // Prepare data for API (only include fields that changed)
       const updateData: any = {};
 
       if (formData.username !== user.username) {
@@ -123,12 +122,10 @@ export default function EditProfileModal({
     } catch (error: any) {
       console.error('Error updating profile:', error);
 
-      // Handle API errors
       if (error.response?.data?.message) {
         if (typeof error.response.data.message === 'string') {
           setErrors({ form: error.response.data.message });
         } else if (Array.isArray(error.response.data.message)) {
-          // Handle validation errors from NestJS
           const newErrors: Record<string, string> = {};
           error.response.data.message.forEach((err: any) => {
             newErrors[err.property] =

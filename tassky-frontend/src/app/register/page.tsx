@@ -8,17 +8,17 @@ import { RegisterDto } from '@/types/auth';
 import { api } from '@/utils/api';
 import { AxiosError } from 'axios';
 import { useRouter } from 'next/navigation';
-import React, { useState } from 'react';
+import React from 'react';
 import { FcGoogle } from 'react-icons/fc';
 
 export default function Register() {
   const router = useRouter();
-  const [formData, setFormData] = useState<RegisterDto>({
+  const [formData, setFormData] = React.useState<RegisterDto>({
     username: '',
     email: '',
     password: '',
   });
-  const [, setError] = useState<string | null>(null);
+  const [, setError] = React.useState<string | null>(null);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;

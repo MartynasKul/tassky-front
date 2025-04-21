@@ -1,12 +1,13 @@
 'use client';
 
+import LeaderboardModal from '../components/ui/LeaderboardModal';
 import CreateTeamModal from '@/app/components/ui/CreateTeamModal';
 import JoinTeamModal from '@/app/components/ui/JoinTeamModal';
 import TeamAdminPanel from '@/app/components/ui/TeamAdminPanel';
 import TeamButton from '@/app/components/ui/TeamButton';
 import { teamsApi } from '@/utils/api';
 import { useRouter } from 'next/navigation';
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import { toast } from 'react-hot-toast';
 
 interface TeamMember {
@@ -38,11 +39,14 @@ export default function Dashboard() {
   const [selectedTeam, setSelectedTeam] = React.useState<Team | null>(null);
   const [loading, setLoading] = React.useState<boolean>(true);
   const [showCreateTeamModal, setShowCreateTeamModal] =
-    useState<boolean>(false);
-  const [showJoinTeamModal, setShowJoinTeamModal] = useState<boolean>(false);
-  const [showAdminPanel, setShowAdminPanel] = useState<boolean>(false);
-  const [isAdmin, setIsAdmin] = useState<boolean>(false);
-  const [currentUser, setCurrentUser] = useState<string | null>(null);
+    React.useState<boolean>(false);
+  const [showJoinTeamModal, setShowJoinTeamModal] =
+    React.useState<boolean>(false);
+  const [showAdminPanel, setShowAdminPanel] = React.useState<boolean>(false);
+  const [isAdmin, setIsAdmin] = React.useState<boolean>(false);
+  const [currentUser, setCurrentUser] = React.useState<string | null>(null);
+  const [showLeaderboardModal, setShowLeaderboardModal] =
+    React.useState<boolean>(false);
   const router = useRouter();
 
   const fetchTeams = async () => {
@@ -65,22 +69,6 @@ export default function Dashboard() {
       setLoading(false);
     }
   };
-
-  // const fetchCurrentUser = async () => {
-  //   try {
-  //     // Need to implement an endpoint if i ever want to make this project into a real production type project
-  //     //, but for now, i use localstorage
-  //     const userInfo = await fetch('/api/users/me', {
-  //       headers: {
-  //         Authorization: `Bearer ${localStorage.getItem('access_token')}`,
-  //       },
-  //     }).then((res) => res.json());
-
-  //     setCurrentUser(userInfo.id);
-  //   } catch (error) {
-  //     console.error('Failed to fetch user info', error);
-  //   }
-  // };
 
   const fetchCurrentUser = () => {
     try {
@@ -114,7 +102,7 @@ export default function Dashboard() {
   };
 
   // Check if user is authenticated
-  useEffect(() => {
+  React.useEffect(() => {
     const token = localStorage.getItem('access_token');
     if (!token) {
       router.push('/login');
@@ -125,7 +113,7 @@ export default function Dashboard() {
   }, [router]);
 
   // Fetch teams after getting current user
-  useEffect(() => {
+  React.useEffect(() => {
     if (currentUser) {
       fetchTeams();
     }
@@ -164,6 +152,27 @@ export default function Dashboard() {
     }
   };
 
+  const handleDeleteTeam = async () => {
+    try {
+      if (!selectedTeam) return;
+      setLoading(true);
+
+      await teamsApi.deleteTeam(selectedTeam.id);
+      toast.success('Team deleted');
+
+      const updatedTeams = teams.filter((team) => team.id !== selectedTeam.id);
+      setTeams(updatedTeams);
+
+      setSelectedTeam(updatedTeams[0] || null);
+      setShowAdminPanel(false);
+    } catch (error) {
+      console.error('Failed to delete team:', error);
+      toast.error('Failed to delete team.');
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const handleSelectTeam = async (team: Team) => {
     try {
       setLoading(true);
@@ -181,12 +190,10 @@ export default function Dashboard() {
   };
 
   const handleTeamUpdate = (updatedTeam: Team) => {
-    // Update the teams list with the updated team
     setTeams(
       teams.map((team) => (team.id === updatedTeam.id ? updatedTeam : team))
     );
 
-    // Update the selected team
     setSelectedTeam(updatedTeam);
   };
 
@@ -196,6 +203,12 @@ export default function Dashboard() {
         <div className="flex">
           {/* Sidebar with teams */}
           <div className="w-48 mr-8">
+            <button
+              onClick={() => setShowLeaderboardModal(true)}
+              className="w-full mb-4 rounded-xl px-4 py-2 bg-violet-500 hover:bg-violet-600 text-white font-semibold shadow-md transition duration-300 ease-in-out transform hover:scale-105"
+            >
+              Teams Leaderboard
+            </button>
             <div className="mb-4 flex flex-col space-y-3 max-h-[80vh] overflow-y-auto pr-2">
               {loading ? (
                 <div className="text-gray-500">Loading teams...</div>
@@ -320,10 +333,17 @@ export default function Dashboard() {
 
       {showAdminPanel && selectedTeam && (
         <TeamAdminPanel
-          // team={selectedTeam}
           team={{ ...selectedTeam, members: selectedTeam?.members || [] }}
           onClose={() => setShowAdminPanel(false)}
           onTeamUpdate={handleTeamUpdate}
+          onTeamDelete={handleDeleteTeam}
+        />
+      )}
+
+      {showLeaderboardModal && (
+        <LeaderboardModal
+          onClose={() => setShowLeaderboardModal(false)}
+          userTeams={teams}
         />
       )}
     </div>

@@ -109,11 +109,9 @@ export const tasksApi = {
   getTasks: async (filter = {}, page = 1, limit = 10) => {
     const queryParams = new URLSearchParams();
 
-    // Add pagination
     queryParams.append('page', page.toString());
     queryParams.append('limit', limit.toString());
 
-    // Add all filters
     Object.entries(filter).forEach(([key, value]) => {
       if (value) queryParams.append(key, value.toString());
     });
@@ -210,7 +208,7 @@ export const usersApi = {
     }
   ) => {
     const response = await api.patch(`/users/${id}`, userData);
-    // Update the local storage with the new user data
+
     const currentUser = JSON.parse(localStorage.getItem('user') || '{}');
     const updatedUser = { ...currentUser, ...response.data };
     localStorage.setItem('user', JSON.stringify(updatedUser));

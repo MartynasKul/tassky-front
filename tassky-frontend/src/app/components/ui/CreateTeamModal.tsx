@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React from 'react';
 
 interface CreateTeamModalProps {
   onClose: () => void;
@@ -11,10 +11,10 @@ export default function CreateTeamModal({
   onClose,
   onCreateTeam,
 }: CreateTeamModalProps) {
-  const [name, setName] = useState('');
-  const [description, setDescription] = useState('');
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [error, setError] = useState('');
+  const [name, setName] = React.useState('');
+  const [description, setDescription] = React.useState('');
+  const [isSubmitting, setIsSubmitting] = React.useState(false);
+  const [error, setError] = React.useState('');
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();

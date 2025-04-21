@@ -5,10 +5,9 @@ import { useAuth } from '@/context/AuthContext';
 import Image from 'next/image';
 import Link from 'next/link';
 import React from 'react';
-import { useState } from 'react';
 
 export default function Header() {
-  const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [isMenuOpen, setIsMenuOpen] = React.useState(false);
   const { isLoggedIn, logout } = useAuth();
 
   return (
