@@ -80,7 +80,6 @@ export default function LeaderboardModal({
   const [loading, setLoading] = React.useState(true);
   const [weeksMap, setWeeksMap] = React.useState<WeekData[]>([]);
 
-  // Fetch tasks data for all teams
   React.useEffect(() => {
     const fetchTasksData = async () => {
       setLoading(true);
@@ -92,12 +91,10 @@ export default function LeaderboardModal({
         const allTeamTasks = await Promise.all(allTasksPromises);
         const allTasks = allTeamTasks.flat();
 
-        // Filter to only completed tasks
         const completedTasks = allTasks.filter(
           (task) => task.status === 'COMPLETED' && task.completedAt
         );
 
-        // Process tasks into weekly data
         processWeeklyData(completedTasks);
       } catch (error) {
         console.error('Failed to fetch tasks data', error);
@@ -111,15 +108,12 @@ export default function LeaderboardModal({
     }
   }, [userTeams]);
 
-  // Process task data into weekly buckets
   const processWeeklyData = (tasks: Task[]) => {
     if (tasks.length === 0) {
       setWeeklyData([]);
       setWeeksMap([]);
       return;
     }
-
-    // Find the date range for all completed tasks
     const completionDates = tasks
       .filter((task) => task.completedAt)
       .map((task) => parseISO(task.completedAt!));
@@ -137,17 +131,14 @@ export default function LeaderboardModal({
       Math.max(...completionDates.map((date) => date.getTime()))
     );
 
-    // Make sure the range includes the current week
     const today = new Date();
     const adjustedLatestDate = isAfter(today, latestDate) ? today : latestDate;
 
-    // Get all weeks in the range
     const weekStarts = eachWeekOfInterval(
       { start: earliestDate, end: adjustedLatestDate },
-      { weekStartsOn: 1 } // Monday as week start
+      { weekStartsOn: 1 }
     );
 
-    // Create weekly data structure
     const weeks: WeekData[] = weekStarts.map((weekStart) => {
       const weekEnd = endOfWeek(weekStart, { weekStartsOn: 1 });
       return {
@@ -161,7 +152,6 @@ export default function LeaderboardModal({
       };
     });
 
-    // Initialize team data for each week
     weeks.forEach((week) => {
       userTeams.forEach((team) => {
         week.teams[team.id] = {
@@ -172,13 +162,11 @@ export default function LeaderboardModal({
       });
     });
 
-    // Assign tasks to weeks
     tasks.forEach((task) => {
       if (!task.completedAt) return;
 
       const completionDate = parseISO(task.completedAt);
 
-      // Find which week this task belongs to
       const weekIndex = weeks.findIndex((week) =>
         isWithinInterval(completionDate, {
           start: week.startDate,
@@ -195,13 +183,10 @@ export default function LeaderboardModal({
       }
     });
 
-    // Sort weeks chronologically (oldest to newest)
     weeks.sort((a, b) => a.startDate.getTime() - b.startDate.getTime());
 
-    // Save the weeks map for reference
     setWeeksMap(weeks);
 
-    // Transform data for Recharts
     const chartsData = weeks.map((week) => {
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const weekData: any = {
@@ -219,7 +204,6 @@ export default function LeaderboardModal({
     setWeeklyData(chartsData);
   };
 
-  // Prepare data for the bar chart
   const prepareBarChartData = () => {
     return userTeams.map((team) => ({
       name: team.name,
@@ -228,7 +212,6 @@ export default function LeaderboardModal({
     }));
   };
 
-  // Get color for each team (to keep consistent colors across charts)
   const getTeamColor = (index: number) => {
     const colors = [
       '#8884d8',
@@ -241,7 +224,6 @@ export default function LeaderboardModal({
     return colors[index % colors.length];
   };
 
-  // Calculate top performing team for insights
   const getTopPerformingTeam = () => {
     if (activeTab === 'xp') {
       return userTeams.reduce((prev, current) =>
@@ -254,14 +236,12 @@ export default function LeaderboardModal({
     }
   };
 
-  // Calculate most improved team based on weekly progress
   const getMostImprovedTeam = () => {
     if (weeklyData.length < 2) return null;
 
     const improvements: { [key: string]: number } = {};
 
     userTeams.forEach((team) => {
-      // Get the first and last week's values
       const firstWeekData = weeklyData[0];
       const lastWeekData = weeklyData[weeklyData.length - 1];
 
@@ -275,7 +255,6 @@ export default function LeaderboardModal({
       improvements[team.name] = lastValue - firstValue;
     });
 
-    // Find the team with the biggest improvement
     let mostImproved = '';
     let highestImprovement = -Infinity;
 

@@ -50,9 +50,7 @@ export default function TeamLeaderboardModal({
     fetchTasks();
   }, [teamId]);
 
-  // Calculate user stats from tasks
   React.useEffect(() => {
-    // Extract unique users from tasks
     const userMap = new Map<string, User>();
 
     tasks.forEach((task) => {
@@ -69,7 +67,6 @@ export default function TeamLeaderboardModal({
 
         const user = userMap.get(task.assignedToId)!;
 
-        // Calculate XP based on task priority and status
         let xpValue = 0;
         if (task.status === 'COMPLETED') {
           switch (task.priority) {
@@ -95,7 +92,6 @@ export default function TeamLeaderboardModal({
       }
     });
 
-    // Convert map to array and sort by XP (descending)
     setUsers(
       Array.from(userMap.values()).sort(
         (a, b) => (b.totalXp || 0) - (a.totalXp || 0)
@@ -104,15 +100,12 @@ export default function TeamLeaderboardModal({
     setLoading(false);
   }, [tasks]);
 
-  // Prepare data for bar chart
   const prepareBarChartData = () => {
-    return users
-      .slice(0, 10) // Limit to top 10 users for better visualization
-      .map((user) => ({
-        name: user.username,
-        [activeTab === 'xp' ? 'XP' : 'Tasks']:
-          activeTab === 'xp' ? user.totalXp : user.totalTasks,
-      }));
+    return users.slice(0, 10).map((user) => ({
+      name: user.username,
+      [activeTab === 'xp' ? 'XP' : 'Tasks']:
+        activeTab === 'xp' ? user.totalXp : user.totalTasks,
+    }));
   };
 
   return (

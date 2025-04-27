@@ -42,7 +42,6 @@ export default function EditProfileModal({
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
 
-    // Clear error when user types
     if (errors[name]) {
       setErrors((prev) => {
         const newErrors = { ...prev };
@@ -109,7 +108,6 @@ export default function EditProfileModal({
         updateData.password = formData.password;
       }
 
-      // Only make API call if there are changes
       if (Object.keys(updateData).length > 0) {
         const updatedUser = await usersApi.updateUserProfile(
           user.id,

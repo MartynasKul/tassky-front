@@ -2,9 +2,7 @@
 
 import { Button } from '../components/ui/Button';
 import { Input } from '../components/ui/Input';
-// import WaveDecoration from '../components/ui/waves';
 import { RegisterDto } from '@/types/auth';
-// import { apiLocal } from '@/utils/api';
 import { api } from '@/utils/api';
 import { AxiosError } from 'axios';
 import { useRouter } from 'next/navigation';
@@ -34,13 +32,10 @@ export default function Register() {
 
     try {
       const response = await api.post('auth/register', formData);
-      // const response = await apiLocal.post('auth/register', formData);
 
-      // Successful registration
       if (response.status === 201) {
         localStorage.setItem('access_token', response.data.token);
 
-        // Redirect to login
         router.push('/login');
       }
     } catch (e: unknown) {
@@ -68,16 +63,6 @@ export default function Register() {
     <div className="flex items-center justify-center w-full h-full">
       <div className="max-w-md w-full bg-white rounded-[40px] overflow-hidden shadow-2xl">
         <div className="flex flex-col items-center justify-center p-10 py-12 relative">
-          {/* Decorative wave lines on left side
-          <div className="absolute left-6 top-0 bottom-0 flex flex-col justify-center space-y-8">
-            <WaveDecoration side={'left'} />
-          </div>
-
-          {/* Decorative wave lines on right side 
-          <div className="absolute right-6 top-0 bottom-0 flex flex-col justify-center space-y-8">
-            <WaveDecoration side={'right'} />
-          </div> */}
-
           <h1 className="text-3xl font-bold mb-8 text-center text-black">
             Register
           </h1>

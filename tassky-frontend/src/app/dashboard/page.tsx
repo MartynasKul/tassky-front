@@ -60,7 +60,6 @@ export default function Dashboard() {
 
       if (teamsData.length > 0 && !selectedTeam) {
         setSelectedTeam(teamsData[0]);
-        // Fetch detailed team info including members
         const detailedTeam = await teamsApi.getTeamWithMembers(teamsData[0].id);
         setSelectedTeam(detailedTeam);
         checkIfUserIsAdmin(detailedTeam);
@@ -75,7 +74,6 @@ export default function Dashboard() {
 
   const fetchCurrentUser = () => {
     try {
-      // Get user info from localStorage
       const userInfoString = localStorage.getItem('user');
 
       if (userInfoString) {
@@ -83,7 +81,6 @@ export default function Dashboard() {
         setCurrentUser(userInfo.id);
       } else {
         console.error('No user information found in localStorage');
-        // Redirect to login if no user info is found
         router.push('/login');
       }
     } catch (error) {
@@ -91,7 +88,6 @@ export default function Dashboard() {
     }
   };
 
-  // Check if the current user is an admin of the selected team
   const checkIfUserIsAdmin = (team: Team) => {
     if (!team.members || !currentUser) return false;
 
@@ -104,7 +100,6 @@ export default function Dashboard() {
     return adminStatus;
   };
 
-  // Check if user is authenticated
   React.useEffect(() => {
     const token = localStorage.getItem('access_token');
     if (!token) {
@@ -115,7 +110,6 @@ export default function Dashboard() {
     fetchCurrentUser();
   }, [router]);
 
-  // Fetch teams after getting current user
   React.useEffect(() => {
     if (currentUser) {
       fetchTeams();
@@ -133,7 +127,6 @@ export default function Dashboard() {
       setShowCreateTeamModal(false);
       toast?.success('Team created successfully!');
 
-      // Fetch detailed team info including members
       const detailedTeam = await teamsApi.getTeamWithMembers(newTeam.id);
       setSelectedTeam(detailedTeam);
       checkIfUserIsAdmin(detailedTeam);
@@ -179,7 +172,6 @@ export default function Dashboard() {
   const handleSelectTeam = async (team: Team) => {
     try {
       setLoading(true);
-      // Fetch detailed team info including members
       const detailedTeam = await teamsApi.getTeamWithMembers(team.id);
       setSelectedTeam(detailedTeam);
       checkIfUserIsAdmin(detailedTeam);
@@ -267,7 +259,6 @@ export default function Dashboard() {
                         <button
                           onClick={() => {
                             setShowTeamLeaderboardModal(true);
-                            // router.push(`/board?teamId=${selectedTeam.id}`);
                           }}
                           className="rounded-xl px-10 py-2 mx-2 bg-violet-400 hover:bg-violet-500 text-white font-semibold shadow-ld transition duration-300 ease-in-out transform hover:scale-105"
                         >

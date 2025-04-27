@@ -45,7 +45,6 @@ const TaskCard: React.FC<TaskCardProps> = ({ task, onViewDetails }) => {
       onClick={handleClick}
     >
       <div className="flex justify-between items-start">
-        {/* <h3 className="font-medium">{task.title}</h3> */}
         <div className="space-y-1">
           <h3 className="font-medium">{task.title}</h3>
         </div>{' '}

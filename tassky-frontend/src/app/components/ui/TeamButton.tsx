@@ -16,7 +16,6 @@ export default function TeamButton({
   isSelected = false,
   onClick,
 }: TeamButtonProps) {
-  // Generate initials for avatar fallback
   const getInitials = (name: string) => {
     return name
       .split(' ')
