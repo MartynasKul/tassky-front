@@ -121,9 +121,6 @@ export default function Login() {
             <div className="font-semibold underline">
               *Sign in with Google temporarily disabled*
             </div>
-            <div className="absolute p-2 rounded-2xl b-4 left-0 right-0 text-center">
-              demo creds: demo | demo1234
-            </div>
           </div>
         </div>
       </div>
