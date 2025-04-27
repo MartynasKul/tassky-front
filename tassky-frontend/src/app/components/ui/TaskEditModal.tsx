@@ -41,6 +41,7 @@ const EditTaskModal: React.FC<EditTaskModalProps> = ({
   React.useEffect(() => {
     const fetchTeamMembers = async () => {
       try {
+        setIsLoading(true);
         const team = await teamsApi.getTeamWithMembers(task.teamId);
         setTeamMembers(team.members);
       } catch (err) {
