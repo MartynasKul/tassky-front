@@ -1,6 +1,7 @@
 'use client';
 
 import LeaderboardModal from '../components/ui/LeaderboardModal';
+import TeamLeaderboardModal from '../components/ui/TeamLeaderboardModal';
 import CreateTeamModal from '@/app/components/ui/CreateTeamModal';
 import JoinTeamModal from '@/app/components/ui/JoinTeamModal';
 import TeamAdminPanel from '@/app/components/ui/TeamAdminPanel';
@@ -46,6 +47,8 @@ export default function Dashboard() {
   const [isAdmin, setIsAdmin] = React.useState<boolean>(false);
   const [currentUser, setCurrentUser] = React.useState<string | null>(null);
   const [showLeaderboardModal, setShowLeaderboardModal] =
+    React.useState<boolean>(false);
+  const [showTeamLeaderboardModal, setShowTeamLeaderboardModal] =
     React.useState<boolean>(false);
   const router = useRouter();
 
@@ -253,12 +256,24 @@ export default function Dashboard() {
                       {selectedTeam.name}
                     </h2>
                     {isAdmin && (
-                      <button
-                        onClick={() => setShowAdminPanel(true)}
-                        className="rounded-xl px-10 py-2 bg-violet-400 hover:bg-violet-500 text-white font-semibold shadow-ld transition duration-300 ease-in-out transform hover:scale-105"
-                      >
-                        Manage Team
-                      </button>
+                      <div>
+                        <button
+                          onClick={() => setShowAdminPanel(true)}
+                          className="rounded-xl px-10 py-2 bg-violet-400 hover:bg-violet-500 text-white font-semibold shadow-ld transition duration-300 ease-in-out transform hover:scale-105"
+                        >
+                          Manage Team
+                        </button>
+
+                        <button
+                          onClick={() => {
+                            setShowTeamLeaderboardModal(true);
+                            // router.push(`/board?teamId=${selectedTeam.id}`);
+                          }}
+                          className="rounded-xl px-10 py-2 mx-2 bg-violet-400 hover:bg-violet-500 text-white font-semibold shadow-ld transition duration-300 ease-in-out transform hover:scale-105"
+                        >
+                          Leaderboard
+                        </button>
+                      </div>
                     )}
                   </div>
 
@@ -292,9 +307,9 @@ export default function Dashboard() {
                         onClick={() => {
                           router.push(`/board?teamId=${selectedTeam.id}`);
                         }}
-                        className="rounded-xl px-10 py-2 bg-violet-400 hover:bg-violet-500 text-white font-semibold shadow-ld transition duration-300 ease-in-out transform hover:scale-105"
+                        className="rounded-xl px-10 py-2 my-2 bg-violet-400 hover:bg-violet-500 text-white font-semibold shadow-ld transition duration-300 ease-in-out transform hover:scale-105"
                       >
-                        Go board
+                        Go to board
                       </button>
                     </div>
                   </div>
@@ -344,6 +359,12 @@ export default function Dashboard() {
         <LeaderboardModal
           onClose={() => setShowLeaderboardModal(false)}
           userTeams={teams}
+        />
+      )}
+      {showTeamLeaderboardModal && (
+        <TeamLeaderboardModal
+          onClose={() => setShowTeamLeaderboardModal(false)}
+          teamId={selectedTeam?.id || ''}
         />
       )}
     </div>
