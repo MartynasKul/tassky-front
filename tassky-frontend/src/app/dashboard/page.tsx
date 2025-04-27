@@ -248,7 +248,7 @@ export default function Dashboard() {
                       {selectedTeam.name}
                     </h2>
                     {isAdmin && (
-                      <div>
+                      <div className=" md: grid-cols-2 space-y-2 ">
                         <button
                           onClick={() => setShowAdminPanel(true)}
                           className="rounded-xl px-10 py-2 bg-violet-400 hover:bg-violet-500 text-white font-semibold shadow-ld transition duration-300 ease-in-out transform hover:scale-105"
