@@ -2,7 +2,8 @@
 
 import { TaskType } from '@/app/board/page';
 import { Comment } from '@/app/types/types';
-import { tasksApi } from '@/utils/api';
+import { User } from '@/types';
+import { tasksApi, usersApi } from '@/utils/api';
 import { commentsApi } from '@/utils/api';
 import Image from 'next/image';
 import React from 'react';
@@ -38,6 +39,7 @@ const TaskDetailsModal: React.FC<TaskDetailsModalProps> = ({
   const [comments, setComments] = React.useState<Comment[]>([]);
   const [newComment, setNewComment] = React.useState('');
   const [isLoading, setIsLoading] = React.useState(true);
+  const [creator, setCreator] = React.useState<User>();
 
   React.useEffect(() => {
     fetchComments();
@@ -54,6 +56,23 @@ const TaskDetailsModal: React.FC<TaskDetailsModalProps> = ({
       setIsLoading(false);
     }
   };
+
+  React.useEffect(() => {
+    async function fetchCreator() {
+      try {
+        setIsLoading(true);
+        const creatorData = await usersApi.getUserProfile(task.createdById);
+        if (creatorData) {
+          setCreator(creatorData);
+        }
+      } catch (error) {
+        console.error('Failed to fetch creator data:', error);
+      } finally {
+        setIsLoading(false);
+      }
+    }
+    fetchCreator();
+  }, [task.createdById]);
 
   const handleAddComment = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -137,7 +156,7 @@ const TaskDetailsModal: React.FC<TaskDetailsModalProps> = ({
           </div>
           <div>
             <h3 className="font-medium text-gray-700">Created By</h3>
-            <p>{task.createdBy?.username}</p>
+            <p>{creator?.username}</p>
           </div>
           <div>
             <h3 className="font-medium text-gray-700">Assigned To</h3>

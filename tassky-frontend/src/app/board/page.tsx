@@ -18,8 +18,8 @@ import { sortableKeyboardCoordinates } from '@dnd-kit/sortable';
 import { useSearchParams } from 'next/navigation';
 import React, { Suspense } from 'react';
 
-//import io from 'socket.io-client'; FOR DEMONSTRATION SOCKETS ARE DISABLED
-
+//Due to vercel not directly supporting websockets, they are disabled for now.
+//import io from 'socket.io-client';
 //const SOCKET_URL =
 // process.env.NEXT_PUBLIC_SOCKET_URL || 'http://localhost:4200';
 
@@ -38,10 +38,7 @@ export type TaskType = {
     username: string;
     avatarUrl?: string;
   };
-  createdBy: {
-    id: string;
-    username: string;
-  };
+  createdById: string;
   teamId: string;
 };
 export default function Board() {
@@ -79,19 +76,20 @@ function BoardContent() {
   const fetchTasks = React.useCallback(async () => {
     try {
       if (teamId) {
-        setIsLoading(true);
         const tasksData = await tasksApi.getTasksByTeam(teamId);
-        setTasks(tasksData);
+
+        if (JSON.stringify(tasksData) !== JSON.stringify(tasks)) {
+          setTasks(tasksData);
+        }
         setError(null);
       }
-    } catch (err) {
+    } catch (error) {
       setError('Failed to load tasks. Please try again.');
-      console.error(err);
-    } finally {
-      setIsLoading(false);
+      console.error(error);
     }
-  }, [teamId]);
+  }, [teamId, tasks]);
 
+  //Fetch tasks with websockets. Not supported by Vercel directly therefore disabled in code.
   /*   React.useEffect(() => {
     fetchTasks();
 
@@ -161,19 +159,28 @@ function BoardContent() {
     }
   } */
 
-  //Temporary fix to sockets not being supported by Vercel directly
   React.useEffect(() => {
-    fetchTasks();
+    setIsLoading(true);
+    fetchTasks().finally(() => {
+      setIsLoading(false);
+    });
+  }, [teamId]);
 
-    //Temporarily making refreshes be handled via programatical refreshes
+  React.useEffect(() => {
+    let isFirstRender = true;
+
     const pollInterval = setInterval(() => {
+      if (isFirstRender) {
+        isFirstRender = false;
+        return;
+      }
       fetchTasks();
-    }, 100000); //Polling is done manually every 100 seconds for now.
+    }, 1000);
 
     return () => {
       clearInterval(pollInterval);
     };
-  }, [teamId, fetchTasks]);
+  }, [fetchTasks]);
 
   const toggleModal = () => setIsCreateModalOpen(!isCreateModalOpen);
 
@@ -187,11 +194,13 @@ function BoardContent() {
       const newStatus = over.id as TaskType['status'];
 
       try {
-        setTasks((currentTasks) =>
-          currentTasks.map((task) =>
-            task.id === taskId ? { ...task, status: newStatus } : task
-          )
-        );
+        // Optimistic update
+        const taskToUpdate = tasks.find((t) => t.id === taskId);
+        if (taskToUpdate) {
+          const updatedTask = { ...taskToUpdate, status: newStatus };
+          updateTask(updatedTask);
+        }
+
         await tasksApi.updateTaskStatus(taskId, newStatus);
 
         if (
@@ -202,15 +211,41 @@ function BoardContent() {
           if (userString) {
             const user = JSON.parse(userString);
             await tasksApi.assignTask(taskId, user.id);
+
+            // Update local state with assignment info
+            const assignedTask = tasks.find((t) => t.id === taskId);
+            if (assignedTask) {
+              updateTask({
+                ...assignedTask,
+                assignedToId: user.id,
+                assignedTo: {
+                  id: user.id,
+                  username: user.username,
+                  avatarUrl: user.avatarUrl,
+                },
+              });
+            }
           }
         }
-
-        fetchTasks();
       } catch (error) {
         console.error('Failed to update task status:', error);
+        // Only fetch tasks on error to reset to server state
         fetchTasks();
       }
     }
+  };
+
+  //Helper functions for task management
+  const updateTask = (updatedTask: TaskType) => {
+    setTasks((currentTasks) =>
+      currentTasks.map((task) =>
+        task.id === updatedTask.id ? updatedTask : task
+      )
+    );
+  };
+
+  const addTask = (newTask: TaskType) => {
+    setTasks((currentTasks) => [...currentTasks, newTask]);
   };
 
   const toggleCreateModal = () => setIsCreateModalOpen(!isCreateModalOpen);
@@ -229,18 +264,21 @@ function BoardContent() {
   const handleCreateTask = async (
     newTask: Omit<
       TaskType,
-      'id' | 'createdAt' | 'updatedAt' | 'createdBy' | 'status'
+      'id' | 'createdAt' | 'updatedAt' | 'createdById' | 'status'
     >
   ) => {
     try {
       if (teamId) {
-        await tasksApi.createTask({
+        // Keep modal open until we get a response
+        const createdTask = await tasksApi.createTask({
           ...newTask,
           teamId,
           deadline: newTask.deadline ? new Date(newTask.deadline) : undefined,
         });
+
+        // Add the new task to state
+        addTask(createdTask);
         toggleModal();
-        fetchTasks();
       }
     } catch (error) {
       console.error('Failed to create task:', error);
