@@ -30,7 +30,6 @@ export default function ProfilePage() {
         const userData = await usersApi.getCurrentUser();
 
         if (!userData) {
-          // Redirect to login if no user data
           router.push('/login');
           return;
         }

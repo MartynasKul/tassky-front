@@ -124,40 +124,6 @@ function BoardContent() {
     };
   }, [teamId, fetchTasks]);
  */
-  /* const handleDragEnd = async (event: DragEndEvent) => {
-    const { active, over } = event;
-
-    if (!over) return;
-
-    if (active.data.current?.status !== over.id) {
-      const taskId = active.id as string;
-      const newStatus = over.id as TaskType['status'];
-
-      try {
-        setTasks((currentTasks) =>
-          currentTasks.map((task) =>
-            task.id === taskId ? { ...task, status: newStatus } : task
-          )
-        );
-
-        await tasksApi.updateTaskStatus(taskId, newStatus);
-
-        if (
-          newStatus === 'IN_PROGRESS' &&
-          !tasks.find((t) => t.id === taskId)?.assignedToId
-        ) {
-          const userString = localStorage.getItem('user');
-          if (userString) {
-            const user = JSON.parse(userString);
-            await tasksApi.assignTask(taskId, user.id);
-          }
-        }
-      } catch (error) {
-        console.error('Failed to update task status:', error);
-        fetchTasks();
-      }
-    }
-  } */
 
   React.useEffect(() => {
     setIsLoading(true);
@@ -194,7 +160,6 @@ function BoardContent() {
       const newStatus = over.id as TaskType['status'];
 
       try {
-        // Optimistic update
         const taskToUpdate = tasks.find((t) => t.id === taskId);
         if (taskToUpdate) {
           const updatedTask = { ...taskToUpdate, status: newStatus };
@@ -212,7 +177,6 @@ function BoardContent() {
             const user = JSON.parse(userString);
             await tasksApi.assignTask(taskId, user.id);
 
-            // Update local state with assignment info
             const assignedTask = tasks.find((t) => t.id === taskId);
             if (assignedTask) {
               updateTask({
@@ -229,13 +193,11 @@ function BoardContent() {
         }
       } catch (error) {
         console.error('Failed to update task status:', error);
-        // Only fetch tasks on error to reset to server state
         fetchTasks();
       }
     }
   };
 
-  //Helper functions for task management
   const updateTask = (updatedTask: TaskType) => {
     setTasks((currentTasks) =>
       currentTasks.map((task) =>
@@ -269,14 +231,12 @@ function BoardContent() {
   ) => {
     try {
       if (teamId) {
-        // Keep modal open until we get a response
         const createdTask = await tasksApi.createTask({
           ...newTask,
           teamId,
           deadline: newTask.deadline ? new Date(newTask.deadline) : undefined,
         });
 
-        // Add the new task to state
         addTask(createdTask);
         toggleModal();
       }

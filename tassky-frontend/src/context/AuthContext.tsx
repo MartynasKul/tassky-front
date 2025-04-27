@@ -26,7 +26,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const router = useRouter();
   const pathname = usePathname();
 
-  // Route protection For loggedIn/ not loggedIn
   const protectedRoutes = [
     '/profile',
     '/dashboard',
@@ -59,13 +58,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   async function tryRefreshToken() {
     try {
       const res = await api.post('/auth/refresh');
-
-      /*  const res = await fetch('/api/auth/refresh',{
-        method: POST,
-        headers: {
-          'Auhtorization': `Bearer ${localStorage.getItem('access_token')}`;
-        },
-        });*/
 
       if (!res) throw new Error('Refresh failed');
 
@@ -110,14 +102,14 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const login = (token: string, user: string) => {
     localStorage.setItem('access_token', token);
-    localStorage.setItem('user', JSON.stringify(user)); // Store user data if needed
+    localStorage.setItem('user', JSON.stringify(user));
     setIsLoggedIn(true);
-    router.push('/dashboard'); // Redirect to dashboard
+    router.push('/dashboard');
   };
 
   const logout = () => {
     localStorage.removeItem('access_token');
-    localStorage.removeItem('user'); // Clear user data if needed
+    localStorage.removeItem('user');
     setIsLoggedIn(false);
     router.push('/');
   };
