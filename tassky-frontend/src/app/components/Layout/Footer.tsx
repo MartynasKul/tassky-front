@@ -14,7 +14,7 @@ export default function Footer() {
   }, []);
   return (
     <div className=" bg-violet-600  py-4 text-center">
-      <p className="font-semibold text-white">Tassky &copy;{year}</p>
+      <p className="font-semibold text-white">Tassky {year}</p>
     </div>
   );
 }
