@@ -49,7 +49,7 @@ const TaskColumn: React.FC<TaskColumnProps> = ({
           </button>
         )}
       </div>
-      <div className="h-full min-h-64 bg-white rounded-lg p-2 space-y-2">
+      <div className="h-full min-h-64 bg-white rounded-lg p-2 space-y-2 max-h-128 overflow-y-auto">
         {tasks.map((task) => (
           <TaskCard
             key={task.id}
