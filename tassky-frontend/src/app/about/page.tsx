@@ -21,7 +21,7 @@ export default function About() {
           Contact Us
         </h2>
         <p className="text-gray-700 mb-4">
-          If you have any questions, suggestions, or feedback, please don&apost
+          If you have any questions, suggestions, or feedback, please don&apos;t
           hesitate to contact us at martiss200@gmail.com
         </p>
       </div>
