@@ -27,6 +27,7 @@ export default function JoinTeamModal({
     } catch (err) {
       setError('Failed to join team. Please check your invite code.' + err);
       setIsSubmitting(false);
+      onClose();
     }
   };
 
