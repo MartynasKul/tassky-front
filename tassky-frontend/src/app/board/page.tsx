@@ -141,7 +141,7 @@ function BoardContent() {
         return;
       }
       fetchTasks();
-    }, 1000);
+    }, 15000);
 
     return () => {
       clearInterval(pollInterval);
