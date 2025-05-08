@@ -41,7 +41,7 @@ const TaskCard: React.FC<TaskCardProps> = ({ task, onViewDetails }) => {
       ref={setNodeRef}
       style={style}
       {...attributes}
-      className="p-3 bg-white rounded-xl shadow border cursor-pointer hover:shadow-md transition-shadow"
+      className="p-3 bg-white rounded-xl shadow border cursor-pointer hover:shadow-md transition-shadow z-50"
       onClick={handleClick}
     >
       <div className="flex justify-between items-start">
