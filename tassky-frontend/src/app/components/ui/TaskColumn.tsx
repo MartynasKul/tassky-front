@@ -2,7 +2,7 @@
 
 import TaskCard from './TaskCard';
 import { TaskType } from '@/app/board/page';
-import { useDroppable } from '@dnd-kit/core';
+import { DragOverlay, useDroppable } from '@dnd-kit/core';
 import React from 'react';
 
 interface TaskColumnProps {
@@ -35,7 +35,7 @@ const TaskColumn: React.FC<TaskColumnProps> = ({
         isOver ? 'ring-2 ring-blue-500' : ''
       }`}
     >
-      <div className="flex justify-between items-center mb-4">
+      <div className="flex justify-between items-center mb-4 -z-50">
         <h2 className="text-lg font-medium">{title}</h2>
         <span className="bg-white px-2 py-1 rounded-full font-bold text-sm">
           {tasks.length}
@@ -49,7 +49,7 @@ const TaskColumn: React.FC<TaskColumnProps> = ({
           </button>
         )}
       </div>
-      <div className="h-full min-h-64 bg-white rounded-lg p-2 space-y-2 max-h-128 overflow-y-auto">
+      <div className="h-full min-h-64 bg-white rounded-lg p-2 space-y-2 max-h-128 overflow-y-auto overflow-x-visible">
         {tasks.map((task) => (
           <TaskCard
             key={task.id}
