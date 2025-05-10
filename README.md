@@ -12,6 +12,8 @@ npm install
 npm run dev
 ```
 
+To test project in action:
+[tassky.vercel.app](https://tassky.vercel.app/)
 
 # Things that i would like to do to move this project further:
 - [ ] Move all types and interfaces to types.ts file
