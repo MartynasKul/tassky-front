@@ -2,7 +2,10 @@
 
 import TaskCard from './TaskCard';
 import { TaskType } from '@/app/board/page';
-import { DragOverlay, useDroppable } from '@dnd-kit/core';
+import {
+  // DragOverlay,
+  useDroppable,
+} from '@dnd-kit/core';
 import React from 'react';
 
 interface TaskColumnProps {
