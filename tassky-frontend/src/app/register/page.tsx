@@ -106,7 +106,7 @@ export default function Register() {
 
             <div className="flex flex-col sm:flex-row sm:justify-between gap-4">
               <Button
-                type="submit"
+                type="button"
                 variant="default"
                 className="rounded-full px-10 py-2 bg-violet-400 hover:bg-violet-500 text-white font-semibold shadow-ld transition duration-300 ease-in-out transform hover:scale-105"
               >
@@ -134,7 +134,7 @@ export default function Register() {
               Log in
             </button>
             <div className="font-semibold underline">
-              *Sign in with Google temporarily disabled*
+              *Registration temporarily disabled*
             </div>
           </div>
         </div>
