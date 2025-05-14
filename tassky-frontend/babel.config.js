@@ -1,15 +1,26 @@
+// babel.config.js - Fixed to properly handle TypeScript in a Next.js project
 module.exports = function (api) {
-  // Check if we're running in a test environment
-  const isTest = api.env('test');
+  // Cache the config
+  api.cache(true);
 
-  // Only apply this config in test environments
-  if (isTest) {
-    return {
-      presets: ['next/babel'],
-    };
-  }
-
-  // In non-test environments, return an empty config
-  // This allows SWC to be used for normal builds
-  return {};
+  return {
+    // Always use Next.js preset which includes TypeScript support
+    presets: [
+      [
+        'next/babel',
+        {
+          'preset-react': {
+            runtime: 'automatic',
+          },
+          'preset-typescript': {},
+        },
+      ],
+    ],
+    // Don't apply any plugins in test environment
+    env: {
+      test: {
+        // Add any test-specific transformations here if needed
+      },
+    },
+  };
 };
