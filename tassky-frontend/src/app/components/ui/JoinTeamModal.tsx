@@ -63,6 +63,7 @@ export default function JoinTeamModal({
   };
 
   const handleBackdropClick = (e: React.MouseEvent) => {
+    e.preventDefault();
     // Prevent closing if currently submitting
     if (!isSubmitting) {
       onClose();

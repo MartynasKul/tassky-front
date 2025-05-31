@@ -29,7 +29,7 @@ const statusFlow: TaskType['status'][] = [
   'TESTING',
   'COMPLETED',
 ];
-const alternativeStatuses: TaskType['status'][] = ['CANCELLED'];
+//const alternativeStatuses: TaskType['status'][] = ['CANCELLED'];
 
 const TaskCard: React.FC<TaskCardProps> = ({
   task,
