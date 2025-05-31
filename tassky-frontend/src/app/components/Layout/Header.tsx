@@ -10,11 +10,17 @@ export default function Header() {
   const [isMenuOpen, setIsMenuOpen] = React.useState(false);
   const { isLoggedIn, logout } = useAuth();
   const menuRef = React.useRef<HTMLDivElement>(null);
+  const buttonRef = React.useRef<HTMLButtonElement>(null);
 
   // Close menu when clicking outside
   React.useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
-      if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
+      if (
+        menuRef.current &&
+        !menuRef.current.contains(event.target as Node) &&
+        buttonRef.current &&
+        !buttonRef.current.contains(event.target as Node)
+      ) {
         setIsMenuOpen(false);
       }
     };
@@ -126,7 +132,7 @@ export default function Header() {
             <button
               onClick={() => setIsMenuOpen(!isMenuOpen)}
               className="text-gray-700 focus:outline-none p-2 hover:bg-gray-100 rounded transition-all duration-300 ease-in-out relative z-50"
-              ref={menuRef}
+              ref={buttonRef}
             >
               <div className="relative w-6 h-6 flex flex-col justify-center items-center">
                 <span
@@ -151,6 +157,7 @@ export default function Header() {
 
         {/* Mobile Navigation Overlay - Fixed positioning */}
         <div
+          ref={menuRef}
           className={`fixed top-20 right-4 w-64 transition-all duration-300 ease-in-out transform z-50 md:hidden ${
             isMenuOpen
               ? 'opacity-100 scale-100 translate-y-0'
