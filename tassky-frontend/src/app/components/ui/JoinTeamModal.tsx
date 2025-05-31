@@ -25,15 +25,9 @@ export default function JoinTeamModal({
 
     setIsSubmitting(true);
     try {
-      const result = await onJoinTeam(inviteCode.trim());
-      console.log('results:', result);
+      await onJoinTeam(inviteCode.trim());
 
-      if (result === true) {
-        onClose();
-      } else {
-        // Parent indicated failure without throwing
-        setError('Failed to join team. Please try again.');
-      }
+      onClose();
     } catch (err) {
       // Handle different error types
       let errorMessage = 'Failed to join team. Please check your invite code.';
