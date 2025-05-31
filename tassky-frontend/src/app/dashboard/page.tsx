@@ -137,15 +137,9 @@ export default function Dashboard() {
   };
 
   const handleJoinTeam = async (inviteCode: string) => {
-    try {
-      const joinedTeam = await teamsApi.joinTeam(inviteCode);
-      setTeams([...teams, joinedTeam]);
-      setShowJoinTeamModal(false);
-      toast?.success('Joined team successfully!');
-    } catch (error) {
-      console.error('Failed to join team', error);
-      toast?.error('Failed to join team. Invalid code?');
-    }
+    const joinedTeam = await teamsApi.joinTeam(inviteCode);
+    setTeams([...teams, joinedTeam]);
+    toast?.success('Joined team successfully!');
   };
 
   const handleDeleteTeam = async () => {

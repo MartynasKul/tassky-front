@@ -1,4 +1,5 @@
 import { teamsApi } from '@/utils/api';
+import { AlertCircle } from 'lucide-react';
 import Image from 'next/image';
 import React from 'react';
 import { toast } from 'react-hot-toast';
@@ -44,6 +45,8 @@ export default function TeamAdminPanel({
     team.description || ''
   );
   const [loading, setLoading] = React.useState<boolean>(false);
+  // Simple validation - just check if name is empty
+  const isNameEmpty = !nameInput.trim();
 
   const refreshInviteCode = async () => {
     try {
@@ -61,12 +64,19 @@ export default function TeamAdminPanel({
       setLoading(false);
     }
   };
+
   const updateTeamInfo = async () => {
+    // Simple check - if name is empty, show browser validation
+    if (!nameInput.trim()) {
+      toast.error('Team name cannot be empty');
+      return;
+    }
+
     try {
       setLoading(true);
       const updatedTeam = await teamsApi.updateTeam(team.id, {
-        name: nameInput,
-        description: descriptionInput,
+        name: nameInput.trim(),
+        description: descriptionInput.trim(),
       });
       setTeamData(updatedTeam);
       onTeamUpdate(updatedTeam);
@@ -123,6 +133,10 @@ export default function TeamAdminPanel({
     }
   };
 
+  const handleNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setNameInput(e.target.value);
+  };
+
   return (
     <div className=" absolute inset-0 flex items-center justify-center z-50">
       <div
@@ -154,13 +168,15 @@ export default function TeamAdminPanel({
           <div className="grid grid-cols-1 gap-4">
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">
-                Team Name
+                Team Name*
               </label>
               <input
                 type="text"
                 value={nameInput}
-                onChange={(e) => setNameInput(e.target.value)}
-                className="w-full p-2 border border-gray-300 rounded-xl  bg-white transition duration-300 ease-in-out hover:scale-101"
+                onChange={handleNameChange}
+                className="w-full p-2 border border-gray-300 rounded-xl bg-white transition duration-300 ease-in-out hover:scale-101 focus:border-violet-500 focus:ring-2 focus:ring-violet-200"
+                required
+                maxLength={50}
               />
             </div>
             <div>
@@ -170,8 +186,12 @@ export default function TeamAdminPanel({
               <textarea
                 value={descriptionInput}
                 onChange={(e) => setDescriptionInput(e.target.value)}
-                className="w-full p-2 border bg-white border-gray-300 rounded-xl h-24 transition duration-300 ease-in-out hover:scale-101"
+                className="w-full p-2 border bg-white border-gray-300 rounded-xl h-24 transition duration-300 ease-in-out hover:scale-101 focus:border-violet-500 focus:ring-2 focus:ring-violet-200"
+                maxLength={500}
               />
+              <p className="text-xs text-gray-500 mt-1">
+                {descriptionInput.length}/500 characters
+              </p>
             </div>
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">
@@ -182,24 +202,28 @@ export default function TeamAdminPanel({
                   type="text"
                   value={teamData.inviteCode}
                   readOnly
-                  className="w-full p-2 border border-gray-300 rounded-xl  bg-white transition duration-300 ease-in-out hover:scale-101"
+                  className="w-full p-2 border border-gray-300 rounded-xl bg-white transition duration-300 ease-in-out hover:scale-101"
                 />
                 <button
                   onClick={refreshInviteCode}
                   disabled={loading}
-                  className="rounded-xl ml-2 px-4 py-2 bg-violet-400 hover:bg-violet-500 text-white font-semibold shadow-lg transition duration-300 ease-in-out transform hover:scale-105"
+                  className="rounded-xl ml-2 px-4 py-2 bg-violet-400 hover:bg-violet-500 disabled:bg-violet-300 disabled:cursor-not-allowed text-white font-semibold shadow-lg transition duration-300 ease-in-out transform hover:scale-105 disabled:hover:scale-100"
                 >
-                  Refresh
+                  {loading ? 'Refreshing...' : 'Refresh'}
                 </button>
               </div>
             </div>
             <div className="text-right">
               <button
                 onClick={updateTeamInfo}
-                disabled={loading}
-                className="rounded-xl px-4 py-2 bg-violet-400 hover:bg-violet-500 text-white font-semibold shadow-lg transition duration-300 ease-in-out transform hover:scale-105"
+                disabled={loading || isNameEmpty}
+                className={`rounded-xl px-4 py-2 font-semibold shadow-lg transition duration-300 ease-in-out transform ${
+                  loading || isNameEmpty
+                    ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
+                    : 'bg-violet-400 hover:bg-violet-500 text-white hover:scale-105'
+                }`}
               >
-                Save Changes
+                {loading ? 'Saving...' : 'Save Changes'}
               </button>
             </div>
           </div>
@@ -207,9 +231,11 @@ export default function TeamAdminPanel({
 
         {/* Team Members Section */}
         <div className="mb-4">
-          <h3 className="text-lg font-semibold mb-4">Team Members</h3>
+          <h3 className="text-lg font-semibold mb-4">
+            Team Members ({teamData.members.length})
+          </h3>
           <div className="overflow-x-auto">
-            <table className="min-w-full bg-white border border-gray-200">
+            <table className="min-w-full bg-white border border-gray-200 rounded-lg">
               <thead>
                 <tr>
                   <th className="py-2 px-4 border-b text-left">User</th>
@@ -223,7 +249,7 @@ export default function TeamAdminPanel({
                 {teamData.members.map((member) => (
                   <tr
                     key={member.id}
-                    className="hover:bg-gray-100 transition duration-300 ease-in-out transform "
+                    className="hover:bg-gray-100 transition duration-300 ease-in-out transform"
                   >
                     <td className="py-2 px-4 border-b">
                       <div className="flex items-center">
@@ -255,7 +281,7 @@ export default function TeamAdminPanel({
                             e.target.value as 'ADMIN' | 'CAPTAIN' | 'MEMBER'
                           )
                         }
-                        className="p-1 border border-gray-300 rounded"
+                        className="p-1 border border-gray-300 rounded focus:border-violet-500 focus:ring-2 focus:ring-violet-200"
                         disabled={loading}
                       >
                         <option value="ADMIN">Admin</option>
@@ -270,9 +296,9 @@ export default function TeamAdminPanel({
                       <button
                         onClick={() => removeMember(member.user.id)}
                         disabled={loading}
-                        className="font-bold text-red-500 hover:text-red-700 transition duration-300 ease-in-out transform hover:scale-105"
+                        className="font-bold text-red-500 hover:text-red-700 disabled:text-red-300 disabled:cursor-not-allowed transition duration-300 ease-in-out transform hover:scale-105 disabled:hover:scale-100"
                       >
-                        Remove
+                        {loading ? 'Removing...' : 'Remove'}
                       </button>
                     </td>
                   </tr>

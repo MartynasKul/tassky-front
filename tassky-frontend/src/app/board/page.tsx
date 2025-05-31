@@ -1,6 +1,7 @@
 'use client';
 
 import CreateTaskModal from '../components/ui/CreateTaskModal';
+import TaskCard from '../components/ui/TaskCard';
 import TaskColumn from '../components/ui/TaskColumn';
 import TaskDetailsModal from '../components/ui/TaskDetailModal';
 import EditTaskModal from '../components/ui/TaskEditModal';
@@ -13,6 +14,8 @@ import {
   useSensor,
   useSensors,
   DragEndEvent,
+  DragStartEvent,
+  DragOverlay,
 } from '@dnd-kit/core';
 import { sortableKeyboardCoordinates } from '@dnd-kit/sortable';
 import { useSearchParams } from 'next/navigation';
@@ -41,21 +44,25 @@ export type TaskType = {
   createdById: string;
   teamId: string;
 };
+
 export default function Board() {
   return (
     <Suspense
       fallback={
-        <div className="flex jsutify-center p-8"> Loading board...</div>
+        <div className="flex justify-center p-8"> Loading board...</div>
       }
     >
       <BoardContent />
     </Suspense>
   );
 }
+
 function BoardContent() {
-  //temporary fix beacuse next/navigation router doesnt allow for prop forwarding
+  //temporary fix because next/navigation router doesn't allow for prop forwarding
   const searchParams = useSearchParams();
   const teamId = searchParams.get('teamId');
+
+  // All useState hooks first
   const [tasks, setTasks] = React.useState<TaskType[]>([]);
   const [isLoading, setIsLoading] = React.useState(true);
   const [error, setError] = React.useState<string | null>(null);
@@ -65,9 +72,15 @@ function BoardContent() {
   const [isEditModalOpen, setIsEditModalOpen] = React.useState<boolean>(false);
   const [isCreateModalOpen, setIsCreateModalOpen] =
     React.useState<boolean>(false);
+  const [activeTask, setActiveTask] = React.useState<TaskType | null>(null);
+  const [isMobile, setIsMobile] = React.useState(false);
 
   const sensors = useSensors(
-    useSensor(PointerSensor),
+    useSensor(PointerSensor, {
+      activationConstraint: {
+        distance: 8,
+      },
+    }),
     useSensor(KeyboardSensor, {
       coordinateGetter: sortableKeyboardCoordinates,
     })
@@ -89,48 +102,23 @@ function BoardContent() {
     }
   }, [teamId, tasks]);
 
-  //Fetch tasks with websockets. Not supported by Vercel directly therefore disabled in code.
-  /*   React.useEffect(() => {
-    fetchTasks();
-
-    //Setup socket connection from real-time updates
-    const socket = io(SOCKET_URL);
-
-    socket.on('connect', () => {
-      console.log('Connect to WebSocket server');
-      socket.emit('joinRoom', teamId);
-    });
-
-    socket.on('taskUpdated', (updatedtask: TaskType) => {
-      setTasks((currentTasks) =>
-        currentTasks.map((task) =>
-          task.id === updatedtask.id ? updatedtask : task
-        )
-      );
-    });
-
-    socket.on('taskCreated', (newTask: TaskType) => {
-      setTasks((currentTasks) => [...currentTasks, newTask]);
-    });
-
-    socket.on('taskDeleted', (taskId: string) => {
-      setTasks((currentTasks) =>
-        currentTasks.filter((task) => task.id !== taskId)
-      );
-    });
-
-    return () => {
-      socket.disconnect();
-    };
-  }, [teamId, fetchTasks]);
- */
-
   React.useEffect(() => {
     setIsLoading(true);
     fetchTasks().finally(() => {
       setIsLoading(false);
     });
   }, [teamId]);
+
+  // Mobile detection
+  React.useEffect(() => {
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth < 768 || 'ontouchstart' in window);
+    };
+
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
 
   React.useEffect(() => {
     let isFirstRender = true;
@@ -148,10 +136,55 @@ function BoardContent() {
     };
   }, [fetchTasks]);
 
+  // Mobile task movement function
+  const handleMobileTaskMove = async (
+    task: TaskType,
+    newStatus: TaskType['status']
+  ) => {
+    if (task.status === newStatus) return;
+
+    try {
+      const updatedTask = { ...task, status: newStatus };
+      updateTask(updatedTask);
+      await tasksApi.updateTaskStatus(task.id, newStatus);
+
+      // Auto-assign when moving to IN_PROGRESS
+      if (newStatus === 'IN_PROGRESS' && !task.assignedToId) {
+        const userString = localStorage.getItem('user');
+        if (userString) {
+          const user = JSON.parse(userString);
+          await tasksApi.assignTask(task.id, user.id);
+          updateTask({
+            ...updatedTask,
+            assignedToId: user.id,
+            assignedTo: {
+              id: user.id,
+              username: user.username,
+              avatarUrl: user.avatarUrl,
+            },
+          });
+        }
+      }
+    } catch (error) {
+      console.error('Failed to update task status:', error);
+      fetchTasks();
+    }
+  };
+
   const toggleModal = () => setIsCreateModalOpen(!isCreateModalOpen);
+
+  // Handle drag start - set the active task for overlay
+  const handleDragStart = (event: DragStartEvent) => {
+    const { active } = event;
+    const draggedTask = tasks.find((task) => task.id === active.id);
+    setActiveTask(draggedTask || null);
+  };
 
   const handleDragEnd = async (event: DragEndEvent) => {
     const { active, over } = event;
+
+    // Clear the active task when drag ends
+    setActiveTask(null);
 
     if (!over) return;
 
@@ -265,39 +298,11 @@ function BoardContent() {
       <DndContext
         sensors={sensors}
         collisionDetection={closestCenter}
+        onDragStart={handleDragStart}
         onDragEnd={handleDragEnd}
       >
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
-          <TaskColumn
-            title="In Progress"
-            status="IN_PROGRESS"
-            tasks={tasksByStatus.IN_PROGRESS}
-            color="bg-yellow-200"
-            onViewTaskDetails={handleViewTaskDetails}
-          />
-          <TaskColumn
-            title="Testing"
-            status="TESTING"
-            tasks={tasksByStatus.TESTING}
-            color="bg-purple-200"
-            onViewTaskDetails={handleViewTaskDetails}
-          />
-          <TaskColumn
-            title="Completed"
-            status="COMPLETED"
-            tasks={tasksByStatus.COMPLETED}
-            color="bg-green-200"
-            onViewTaskDetails={handleViewTaskDetails}
-          />
-          <TaskColumn
-            title="Cancelled"
-            status="CANCELLED"
-            tasks={tasksByStatus.CANCELLED}
-            color="bg-red-200"
-            onViewTaskDetails={handleViewTaskDetails}
-          />
-        </div>
-        <div className="mt-8 pt-8 ">
+        {/* Mobile: Backlog first */}
+        <div className="block md:hidden mb-8">
           <TaskColumn
             title="Backlog"
             status="UNASSIGNED"
@@ -306,8 +311,77 @@ function BoardContent() {
             onViewTaskDetails={handleViewTaskDetails}
             showAddButton={true}
             onAddTask={toggleModal}
+            isMobile={isMobile}
+            onMobileTaskMove={handleMobileTaskMove}
           />
-        </div>{' '}
+        </div>
+
+        {/* Main columns grid */}
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
+          <TaskColumn
+            title="In Progress"
+            status="IN_PROGRESS"
+            tasks={tasksByStatus.IN_PROGRESS}
+            color="bg-yellow-200"
+            onViewTaskDetails={handleViewTaskDetails}
+            isMobile={isMobile}
+            onMobileTaskMove={handleMobileTaskMove}
+          />
+          <TaskColumn
+            title="Review"
+            status="TESTING"
+            tasks={tasksByStatus.TESTING}
+            color="bg-purple-200"
+            onViewTaskDetails={handleViewTaskDetails}
+            isMobile={isMobile}
+            onMobileTaskMove={handleMobileTaskMove}
+          />
+          <TaskColumn
+            title="Completed"
+            status="COMPLETED"
+            tasks={tasksByStatus.COMPLETED}
+            color="bg-green-200"
+            onViewTaskDetails={handleViewTaskDetails}
+            isMobile={isMobile}
+            onMobileTaskMove={handleMobileTaskMove}
+          />
+          <TaskColumn
+            title="Cancelled"
+            status="CANCELLED"
+            tasks={tasksByStatus.CANCELLED}
+            color="bg-red-200"
+            onViewTaskDetails={handleViewTaskDetails}
+            isMobile={isMobile}
+            onMobileTaskMove={handleMobileTaskMove}
+          />
+        </div>
+
+        {/* Desktop: Backlog at bottom */}
+        <div className="hidden md:block mt-8 pt-8">
+          <TaskColumn
+            title="Backlog"
+            status="UNASSIGNED"
+            tasks={tasksByStatus.UNNASIGNED}
+            color="bg-gray-200"
+            onViewTaskDetails={handleViewTaskDetails}
+            showAddButton={true}
+            onAddTask={toggleModal}
+            isMobile={isMobile}
+            onMobileTaskMove={handleMobileTaskMove}
+          />
+        </div>
+
+        {/* Add DragOverlay with better styling */}
+        <DragOverlay dropAnimation={{ duration: 0 }}>
+          {activeTask ? (
+            <div className="transform rotate-3 opacity-90 pointer-events-none shadow-2xl">
+              <TaskCard
+                task={activeTask}
+                onViewDetails={() => {}} // Empty function since overlay shouldn't be clickable
+              />
+            </div>
+          ) : null}
+        </DragOverlay>
       </DndContext>
 
       {isCreateModalOpen && teamId && (
