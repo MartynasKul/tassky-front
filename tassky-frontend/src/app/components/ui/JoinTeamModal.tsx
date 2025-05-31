@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
+import { AlertCircle } from 'lucide-react';
 import React from 'react';
 
 interface JoinTeamModalProps {
@@ -15,6 +17,7 @@ export default function JoinTeamModal({
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setError('');
 
     if (!inviteCode.trim()) {
       setError('Invite code is required');
@@ -24,9 +27,47 @@ export default function JoinTeamModal({
     setIsSubmitting(true);
     try {
       await onJoinTeam(inviteCode.trim());
+
+      onClose();
     } catch (err) {
-      setError('Failed to join team. Please check your invite code.' + err);
+      // Handle different error types
+      let errorMessage = 'Failed to join team. Please check your invite code.';
+
+      // Type-safe error handling
+      if (err && typeof err === 'object') {
+        const error = err as any;
+
+        if (error.response?.status === 404) {
+          errorMessage = 'Invalid invite code. Please check and try again.';
+        } else if (error.response?.status === 409) {
+          errorMessage = 'You are already a member of this team.';
+        } else if (error.response?.status === 403) {
+          errorMessage = 'This invite code has expired or is no longer valid.';
+        } else if (error.message && typeof error.message === 'string') {
+          errorMessage = error.message;
+        }
+      } else if (typeof err === 'string') {
+        errorMessage = err;
+      }
+
+      setError(errorMessage);
+    } finally {
       setIsSubmitting(false);
+    }
+  };
+
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setInviteCode(e.target.value);
+    // Clear error when user starts typing
+    if (error) {
+      setError('');
+    }
+  };
+
+  const handleBackdropClick = (e: React.MouseEvent) => {
+    e.preventDefault();
+    // Prevent closing if currently submitting
+    if (!isSubmitting) {
       onClose();
     }
   };
@@ -35,16 +76,22 @@ export default function JoinTeamModal({
     <div className="fixed inset-0 flex items-center justify-center z-50">
       <div
         className="absolute inset-0 bg-black opacity-50"
-        onClick={onClose}
+        onClick={handleBackdropClick}
       ></div>
       <div className="bg-white rounded-lg p-6 w-full max-w-md z-10">
         <h2 className="text-xl font-bold mb-4">Join Team</h2>
 
-        {error && (
-          <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-2 rounded mb-4">
-            {error}
+        {/* Error Display with Animation */}
+        <div
+          className={`transition-all duration-300 ease-in-out overflow-hidden ${
+            error ? 'max-h-20 mb-4 opacity-100' : 'max-h-0 mb-0 opacity-0'
+          }`}
+        >
+          <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg flex items-center gap-3">
+            <AlertCircle className="h-5 w-5 text-red-500 flex-shrink-0" />
+            <span className="text-sm">{error}</span>
           </div>
-        )}
+        </div>
 
         <form onSubmit={handleSubmit}>
           <div className="mb-6">
@@ -58,9 +105,14 @@ export default function JoinTeamModal({
               type="text"
               id="inviteCode"
               value={inviteCode}
-              onChange={(e) => setInviteCode(e.target.value)}
-              className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-violet-500"
+              onChange={handleInputChange}
+              className={`w-full border rounded-md px-3 py-2 transition-all duration-200 focus:outline-none focus:ring-2 ${
+                error
+                  ? 'border-red-300 bg-red-50 focus:border-red-500 focus:ring-red-200'
+                  : 'border-gray-300 focus:border-violet-500 focus:ring-violet-200'
+              }`}
               placeholder="Enter team invite code"
+              disabled={isSubmitting}
               required
             />
             <p className="text-sm text-gray-500 mt-1">
@@ -72,15 +124,15 @@ export default function JoinTeamModal({
             <button
               type="button"
               onClick={onClose}
-              className="px-4 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-100"
+              className="px-4 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-100 disabled:bg-gray-100 disabled:cursor-not-allowed transition-colors"
               disabled={isSubmitting}
             >
               Cancel
             </button>
             <button
               type="submit"
-              className="px-4 py-2 bg-violet-500 text-white rounded-md hover:bg-violet-600 focus:outline-none focus:ring-2 focus:ring-violet-500"
-              disabled={isSubmitting}
+              className="px-4 py-2 bg-violet-500 text-white rounded-md hover:bg-violet-600 disabled:bg-violet-400 disabled:cursor-not-allowed focus:outline-none focus:ring-2 focus:ring-violet-500 transition-colors"
+              disabled={isSubmitting || !inviteCode.trim()}
             >
               {isSubmitting ? 'Joining...' : 'Join Team'}
             </button>
