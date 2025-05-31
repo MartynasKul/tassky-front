@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 'use client';
 
 import { Button } from '../components/ui/Button';
@@ -119,7 +120,8 @@ export default function Register() {
             break;
           case 409:
             // Handle conflicts based on the error message
-            const errorMessage = error.response.data?.message || '';
+            const responseData = error.response.data as any;
+            const errorMessage = responseData?.message || '';
             const conflictErrors: FieldErrors = {};
             let generalError = '';
 
@@ -155,7 +157,8 @@ export default function Register() {
             break;
           case 422:
             // Handle validation errors from server
-            const validationErrors = error.response.data?.errors || {};
+            const validationResponseData = error.response.data as any;
+            const validationErrors = validationResponseData?.errors || {};
             const fieldValidationErrors: FieldErrors = {};
 
             if (validationErrors.username) {
@@ -217,7 +220,7 @@ export default function Register() {
       return { strength: score, color: 'bg-yellow-400', text: 'Fair' };
     if (score <= 4)
       return { strength: score, color: 'bg-blue-400', text: 'Good' };
-    return { strength: score, color: 'bg=green-400', text: 'Strong' };
+    return { strength: score, color: 'bg-green-400', text: 'Strong' };
   };
 
   const passwordStrength = getPasswordStrength(formData.password);

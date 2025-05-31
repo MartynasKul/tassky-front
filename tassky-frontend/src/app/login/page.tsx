@@ -42,7 +42,7 @@ export default function Login() {
   };
 
   const validateForm = (): boolean => {
-    const errors: FieldErrors = [];
+    const errors: FieldErrors = {};
     let isValid = true;
 
     Object.entries(formData).forEach(([key, value]) => {
