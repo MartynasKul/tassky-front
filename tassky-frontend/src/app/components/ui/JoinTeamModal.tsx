@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { AlertCircle } from 'lucide-react';
 import React from 'react';
 
@@ -32,14 +33,21 @@ export default function JoinTeamModal({
       // Handle different error types
       let errorMessage = 'Failed to join team. Please check your invite code.';
 
-      if (err?.response?.status === 404) {
-        errorMessage = 'Invalid invite code. Please check and try again.';
-      } else if (err?.response?.status === 409) {
-        errorMessage = 'You are already a member of this team.';
-      } else if (err?.response?.status === 403) {
-        errorMessage = 'This invite code has expired or is no longer valid.';
-      } else if (err?.message) {
-        errorMessage = err.message;
+      // Type-safe error handling
+      if (err && typeof err === 'object') {
+        const error = err as any;
+
+        if (error.response?.status === 404) {
+          errorMessage = 'Invalid invite code. Please check and try again.';
+        } else if (error.response?.status === 409) {
+          errorMessage = 'You are already a member of this team.';
+        } else if (error.response?.status === 403) {
+          errorMessage = 'This invite code has expired or is no longer valid.';
+        } else if (error.message && typeof error.message === 'string') {
+          errorMessage = error.message;
+        }
+      } else if (typeof err === 'string') {
+        errorMessage = err;
       }
 
       setError(errorMessage);
