@@ -16,9 +16,9 @@ To test project in action:
 [tassky.vercel.app](https://tassky.vercel.app/)
 
 # Things that i would like to do to move this project further:
-- [ ] Move all types and interfaces to types.ts file
-- [ ] Move auth to Clerk instead of writing the auth myself. As proven with no Google OAuth, im incapable of doing that for now. Thats why a normal, less secure JWT auth is done.
-- [ ] Move to AWS instead of Vercel. (unless i figure out websockets with vercel)
+- [ ] Move all types and interfaces to types.ts file. For Code cleanup
+- [-] Move auth to Clerk instead of writing the auth myself. As proven with no Google OAuth, im incapable of doing that for now. Thats why a normal, less secure JWT auth is done. Unnecessary to do, should figure it out myself
+- [-] Move to AWS instead of Vercel. (unless i figure out websockets with vercel) Unnecessary.
 - [ ] Add API for task creation from other tools such as github, machines that run certain tasks.
 - [ ] Add AI bot to create tasks with natural language instead of going and manually adding the tasks myself.
-- [ ] Make my project more swift and mobile friendly. (Currently not that mobile friendly as seen from some modals/pages)
+- [x] Make my project more swift and mobile friendly. (Currently not that mobile friendly as seen from some modals/pages)
